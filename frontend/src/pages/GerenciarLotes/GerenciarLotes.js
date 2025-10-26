@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Package, Plus, DollarSign, CheckCircle, Clock, Eye, RefreshCw, AlertCircle } from 'lucide-react';
 import Layout from '../../components/Layout/Layout';
 import Card from '../../components/Card/Card';
@@ -21,16 +21,6 @@ const GerenciarLotes = () => {
   const [modalPagamento, setModalPagamento] = useState(null);
   const [valorPagamento, setValorPagamento] = useState('');
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  useEffect(() => {
-    if (pesoMaximo > 0) {
-      simularLote();
-    }
-  }, [pesoMaximo, tokensDisponiveis]);
-
   const loadData = async () => {
     try {
       setLoading(true);
@@ -49,7 +39,11 @@ const GerenciarLotes = () => {
     }
   };
 
-  const simularLote = () => {
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const simularLote = useCallback(() => {
     if (!tokensDisponiveis || tokensDisponiveis.length === 0) {
       setSimulacao(null);
       return;
@@ -76,7 +70,13 @@ const GerenciarLotes = () => {
       pesoTotal: pesoAcumulado,
       tokens: tokensSelecionados
     });
-  };
+  }, [tokensDisponiveis, pesoMaximo]);
+
+  useEffect(() => {
+    if (pesoMaximo > 0) {
+      simularLote();
+    }
+  }, [pesoMaximo, simularLote]);
 
   const handleCriarLote = async () => {
     if (!pesoMaximo || pesoMaximo <= 0) {

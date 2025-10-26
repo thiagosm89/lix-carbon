@@ -2,8 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   TrendingUp, 
-  Trash2, 
-  Wallet, 
+  Trash2,
   Leaf, 
   Recycle,
   Calendar,
