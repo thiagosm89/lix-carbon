@@ -499,14 +499,29 @@
 
 /* Footer */
 .footer {
-  background: linear-gradient(135deg, var(--dark-blue) 0%, var(--dark-blue-light) 100%);
+  background: linear-gradient(135deg, #2E8B57 0%, #3CB371 100%);
   color: var(--white);
   padding: 3rem 0 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(127, 209, 75, 0.2) 0%, transparent 70%);
+  border-radius: 50%;
 }
 
 .footer-content {
   text-align: center;
   margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
 }
 
 .footer-logo {
@@ -535,6 +550,8 @@
   padding-top: 2rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.6);
+  position: relative;
+  z-index: 1;
 }
 
 /* Responsive */
