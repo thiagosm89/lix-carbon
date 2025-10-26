@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Totem LixCarbon - Simulador</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .totem-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .btn-gerar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .btn-gerar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-gerar:active {
+            transform: translateY(0);
+        }
+
+        .btn-gerar:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .token-display {
+            background: #f7fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+            display: none;
+            animation: slideIn 0.5s;
+        }
+
+        .token-display.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .token-numero {
+            font-size: 48px;
+            font-weight: bold;
+            color: #667eea;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 5px;
+            margin-bottom: 20px;
+        }
+
+        .token-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .categoria-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .categoria-reciclavel {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .categoria-organico {
+            background: #fef5e7;
+            color: #7d5a0b;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #fed7d7;
+            color: #742a2a;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            color: #38a169;
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: #a0aec0;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="totem-container">
+        <div class="logo">🌱♻️</div>
+        <h1>Totem LixCarbon</h1>
+        <p class="subtitle">Simulador de Geração de Token</p>
+
+        <button class="btn-gerar" id="btnGerar" onclick="gerarToken()">
+            <span id="btnText">Gerar Token de Pesagem</span>
+            <span id="btnLoading" class="loading" style="display: none;"></span>
+        </button>
+
+        <div class="token-display" id="tokenDisplay">
+            <p class="success-message">✅ Token gerado com sucesso!</p>
+            <div class="token-numero" id="tokenNumero">------</div>
+            <span class="categoria-badge" id="categoriaBadge">-</span>
+            
+            <div class="token-info">
+                <div class="info-item">
+                    <div class="info-label">Peso</div>
+                    <div class="info-value" id="tokenPeso">0 kg</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Data/Hora</div>
+                    <div class="info-value" id="tokenData">-</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            Erro ao gerar token. Tente novamente.
+        </div>
+
+        <div class="footer">
+            Desenvolvido por LixCarbon<br>
+            Sistema de Crédito de Carbono via Coleta de Resíduos
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+
+        async function gerarToken() {
+            const btn = document.getElementById('btnGerar');
+            const btnText = document.getElementById('btnText');
+            const btnLoading = document.getElementById('btnLoading');
+            const tokenDisplay = document.getElementById('tokenDisplay');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Desabilitar botão e mostrar loading
+            btn.disabled = true;
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline-block';
+            tokenDisplay.classList.remove('show');
+            errorMessage.classList.remove('show');
+
+            try {
+                const response = await fetch(`${API_URL}/totem/gerar-token`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Mostrar token gerado
+                    document.getElementById('tokenNumero').textContent = data.token.numero;
+                    document.getElementById('tokenPeso').textContent = data.token.peso + ' kg';
+                    
+                    const categoriaBadge = document.getElementById('categoriaBadge');
+                    categoriaBadge.textContent = data.token.categoria === 'RECICLAVEL' ? 'Reciclável' : 'Orgânico';
+                    categoriaBadge.className = 'categoria-badge ' + 
+                        (data.token.categoria === 'RECICLAVEL' ? 'categoria-reciclavel' : 'categoria-organico');
+
+                    const dataToken = new Date(data.token.dataCriacao);
+                    document.getElementById('tokenData').textContent = 
+                        dataToken.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+                    tokenDisplay.classList.add('show');
+                } else {
+                    errorMessage.textContent = data.error || 'Erro ao gerar token';
+                    errorMessage.classList.add('show');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                errorMessage.textContent = 'Erro de conexão com o servidor';
+                errorMessage.classList.add('show');
+            } finally {
+                // Reabilitar botão
+                btn.disabled = false;
+                btnText.style.display = 'inline';
+                btnLoading.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
+

@@ -11,6 +11,7 @@ const wasteRoutes = require('./routes/waste');
 const paymentRoutes = require('./routes/payment');
 const dashboardRoutes = require('./routes/dashboard');
 const loteRoutes = require('./routes/lote');
+const totemRoutes = require('./routes/totem');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -27,12 +28,16 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Servir arquivos estáticos (para o totem.html)
+app.use('/totem', express.static('public'));
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/waste', wasteRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/lote', loteRoutes);
+app.use('/api/totem', totemRoutes); // Endpoint público para simulação do totem
 
 // Health check
 app.get('/api/health', (req, res) => {

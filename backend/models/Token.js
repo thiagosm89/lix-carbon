@@ -83,6 +83,21 @@ class Token {
       throw error;
     }
   }
+
+  // Buscar tokens recentes (para debug do totem)
+  static async findRecent(limit = 10) {
+    try {
+      const sql = `
+        SELECT * FROM available_tokens 
+        ORDER BY dataCriacao DESC 
+        LIMIT $1
+      `;
+      return await db.allAsync(sql, [limit]);
+    } catch (error) {
+      console.error('Erro ao buscar tokens recentes:', error);
+      return [];
+    }
+  }
 }
 
 module.exports = Token;
