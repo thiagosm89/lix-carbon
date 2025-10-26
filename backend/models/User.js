@@ -55,29 +55,27 @@ class User {
 
   // Criar novo usuário
   static async create(userData) {
-    const id = uuidv4();
-    const criadoEm = new Date().toISOString();
     const senhaHash = bcrypt.hashSync(userData.senha, 10);
 
     try {
+      // PostgreSQL: usar RETURNING para obter o registro criado
       const sql = `
-        INSERT INTO users (id, nome, cnpj, email, senha, role, endereco, telefone, criadoEm)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO users (nome, cnpj, email, senha, role, endereco, telefone)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING *
       `;
 
-      await db.runAsync(sql, [
-        id,
+      const result = await db.pool.query(sql, [
         userData.nome,
         userData.cnpj || null,
         userData.email,
         senhaHash,
         userData.role || 'USUARIO',
         userData.endereco || null,
-        userData.telefone || null,
-        criadoEm
+        userData.telefone || null
       ]);
 
-      return await this.findById(id);
+      return result.rows[0];
     } catch (error) {
       console.error('Erro ao criar usuário:', error);
       throw error;

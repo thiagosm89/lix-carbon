@@ -23,23 +23,21 @@ class Token {
 
   // Criar novo token
   static async create(tokenData) {
-    const dataCriacao = new Date().toISOString();
-
     try {
       const sql = `
-        INSERT INTO available_tokens (token, categoria, peso, usado, dataCriacao)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO available_tokens (token, categoria, peso, usado)
+        VALUES ($1, $2, $3, $4)
+        RETURNING *
       `;
 
-      await db.runAsync(sql, [
+      const result = await db.pool.query(sql, [
         tokenData.token,
         tokenData.categoria,
         tokenData.peso,
-        0,
-        dataCriacao
+        0
       ]);
 
-      return await this.findByToken(tokenData.token);
+      return result.rows[0];
     } catch (error) {
       console.error('Erro ao criar token:', error);
       throw error;

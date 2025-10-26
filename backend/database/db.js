@@ -1,141 +1,173 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const { Pool } = require('pg');
 
-// Caminho do banco de dados
-const DB_PATH = path.join(__dirname, 'lixcarbon.db');
-
-// Criar conexão com o banco
-const db = new sqlite3.Database(DB_PATH, (err) => {
-  if (err) {
-    console.error('❌ Erro ao conectar ao banco de dados:', err);
-    process.exit(1);
+// Conexão com PostgreSQL (Neon)
+const pool = new Pool({
+  connectionString: process.env.POSTGRES_URL || process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
   }
-  console.log('✅ Conectado ao banco de dados SQLite');
 });
 
-// Habilitar foreign keys
-db.run('PRAGMA foreign_keys = ON', (err) => {
-  if (err) console.error('Erro ao habilitar foreign keys:', err);
+// Testar conexão
+pool.on('connect', () => {
+  console.log('✅ Conectado ao banco de dados PostgreSQL (Neon)');
 });
 
-// Criar helpers para usar promises
-db.getAsync = function(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    this.get(sql, params, (err, row) => {
-      if (err) reject(err);
-      else resolve(row);
-    });
-  });
+pool.on('error', (err) => {
+  console.error('❌ Erro inesperado no banco de dados:', err);
+});
+
+// Criar helpers compatíveis com o código SQLite anterior
+const db = {
+  // Helper para SELECT que retorna UMA linha
+  getAsync: async function(sql, params = []) {
+    try {
+      // Converter ? para $1, $2, etc
+      const pgSql = convertParams(sql);
+      const result = await pool.query(pgSql, params);
+      return result.rows[0] || null;
+    } catch (error) {
+      console.error('Erro em getAsync:', error);
+      throw error;
+    }
+  },
+
+  // Helper para SELECT que retorna MÚLTIPLAS linhas
+  allAsync: async function(sql, params = []) {
+    try {
+      const pgSql = convertParams(sql);
+      const result = await pool.query(pgSql, params);
+      return result.rows || [];
+    } catch (error) {
+      console.error('Erro em allAsync:', error);
+      throw error;
+    }
+  },
+
+  // Helper para INSERT/UPDATE/DELETE
+  runAsync: async function(sql, params = []) {
+    try {
+      const pgSql = convertParams(sql);
+      const result = await pool.query(pgSql, params);
+      return {
+        lastID: result.rows[0]?.id || null,
+        changes: result.rowCount || 0
+      };
+    } catch (error) {
+      console.error('Erro em runAsync:', error);
+      throw error;
+    }
+  },
+
+  // Acesso direto ao pool para queries mais complexas
+  query: (sql, params) => pool.query(sql, params),
+  pool: pool
 };
 
-db.allAsync = function(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    this.all(sql, params, (err, rows) => {
-      if (err) reject(err);
-      else resolve(rows || []);
-    });
+// Converter placeholders ? para $1, $2, etc (PostgreSQL style)
+function convertParams(sql) {
+  let count = 0;
+  return sql.replace(/\?/g, () => {
+    count++;
+    return `$${count}`;
   });
-};
+}
 
-db.runAsync = function(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    this.run(sql, params, function(err) {
-      if (err) reject(err);
-      else resolve({ lastID: this.lastID, changes: this.changes });
-    });
-  });
-};
-
-// Criar tabelas de forma síncrona
-console.log('🗄️  Inicializando banco de dados SQLite...');
-
-db.serialize(() => {
-  // Tabela de usuários
-  db.run(`
-    CREATE TABLE IF NOT EXISTS users (
-      id TEXT PRIMARY KEY,
-      nome TEXT NOT NULL,
-      cnpj TEXT UNIQUE,
-      email TEXT NOT NULL UNIQUE,
-      senha TEXT NOT NULL,
-      role TEXT NOT NULL CHECK(role IN ('USUARIO', 'VALIDADOR_CREDITO', 'ADMINISTRADOR')),
-      endereco TEXT,
-      telefone TEXT,
-      criadoEm TEXT NOT NULL DEFAULT (datetime('now'))
-    )
-  `, (err) => {
-    if (err) console.error('Erro ao criar tabela users:', err);
-  });
-
-  // Tabela de registros de lixo
-  db.run(`
-    CREATE TABLE IF NOT EXISTS waste_records (
-      id TEXT PRIMARY KEY,
-      userId TEXT NOT NULL,
-      token TEXT NOT NULL UNIQUE,
-      categoria TEXT NOT NULL CHECK(categoria IN ('RECICLAVEL', 'ORGANICO')),
-      peso REAL NOT NULL,
-      credito REAL NOT NULL,
-      loteId TEXT,
-      valorProporcional REAL DEFAULT 0,
-      status TEXT NOT NULL CHECK(status IN ('VALIDADO', 'ENVIADO_VALIDADORA', 'LIBERADO_PAGAMENTO', 'PENDENTE_PAGAMENTO', 'PAGO')),
-      dataCriacao TEXT NOT NULL DEFAULT (datetime('now')),
-      dataValidacao TEXT,
-      dataSolicitacaoPagamento TEXT,
-      dataPagamento TEXT,
-      FOREIGN KEY (userId) REFERENCES users(id),
-      FOREIGN KEY (loteId) REFERENCES lotes(id)
-    )
-  `, (err) => {
-    if (err) console.error('Erro ao criar tabela waste_records:', err);
-  });
-
-  // Tabela de tokens disponíveis
-  // Um token pode ser gerado várias vezes, mas apenas um disponível por vez
-  db.run(`
-    CREATE TABLE IF NOT EXISTS available_tokens (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      token TEXT NOT NULL,
-      categoria TEXT NOT NULL CHECK(categoria IN ('RECICLAVEL', 'ORGANICO')),
-      peso REAL NOT NULL,
-      usado INTEGER NOT NULL DEFAULT 0,
-      dataCriacao TEXT NOT NULL DEFAULT (datetime('now'))
-    )
-  `, (err) => {
-    if (err) console.error('Erro ao criar tabela available_tokens:', err);
-  });
-
-  // Tabela de lotes enviados para validadora
-  db.run(`
-    CREATE TABLE IF NOT EXISTS lotes (
-      id TEXT PRIMARY KEY,
-      pesoMaximo REAL NOT NULL,
-      pesoUtilizado REAL NOT NULL,
-      quantidadeTokens INTEGER NOT NULL,
-      valorPago REAL DEFAULT 0,
-      percentualEmpresa REAL DEFAULT 20,
-      valorDistribuido REAL DEFAULT 0,
-      status TEXT NOT NULL CHECK(status IN ('PENDENTE_VALIDADORA', 'PAGO_VALIDADORA', 'PAGO_USUARIOS')),
-      dataCriacao TEXT NOT NULL DEFAULT (datetime('now')),
-      dataPagamentoValidadora TEXT,
-      observacoes TEXT
-    )
-  `, (err) => {
-    if (err) console.error('Erro ao criar tabela lotes:', err);
-  });
-
-  // Criar índices
-  db.run('CREATE INDEX IF NOT EXISTS idx_waste_userId ON waste_records(userId)');
-  db.run('CREATE INDEX IF NOT EXISTS idx_waste_status ON waste_records(status)');
-  db.run('CREATE INDEX IF NOT EXISTS idx_waste_token ON waste_records(token)');
-  db.run('CREATE INDEX IF NOT EXISTS idx_waste_loteId ON waste_records(loteId)');
-  db.run('CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)');
-  db.run('CREATE INDEX IF NOT EXISTS idx_users_cnpj ON users(cnpj)');
-  db.run('CREATE INDEX IF NOT EXISTS idx_tokens_number ON available_tokens(token)');
-  db.run('CREATE INDEX IF NOT EXISTS idx_tokens_usado ON available_tokens(usado)');
-  db.run('CREATE INDEX IF NOT EXISTS idx_lotes_status ON lotes(status)');
+// Inicializar schema do banco de dados
+async function initDatabase() {
+  const client = await pool.connect();
   
-  console.log('✅ Banco de dados inicializado com sucesso!');
+  try {
+    console.log('🗄️  Inicializando schema do banco de dados PostgreSQL...');
+
+    // Tabela de usuários
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        nome VARCHAR(255) NOT NULL,
+        cnpj VARCHAR(18) UNIQUE,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        senha VARCHAR(255) NOT NULL,
+        role VARCHAR(50) NOT NULL CHECK(role IN ('USUARIO', 'VALIDADOR_CREDITO', 'ADMINISTRADOR')),
+        endereco TEXT,
+        telefone VARCHAR(20),
+        criadoEm TIMESTAMP NOT NULL DEFAULT NOW()
+      )
+    `);
+
+    // Tabela de lotes (deve vir antes de waste_records por causa da FK)
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS lotes (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        pesoMaximo NUMERIC(10,2) NOT NULL,
+        pesoUtilizado NUMERIC(10,2) NOT NULL,
+        quantidadeTokens INTEGER NOT NULL,
+        valorPago NUMERIC(10,2) DEFAULT 0,
+        percentualEmpresa NUMERIC(5,2) DEFAULT 20,
+        valorDistribuido NUMERIC(10,2) DEFAULT 0,
+        status VARCHAR(50) NOT NULL CHECK(status IN ('PENDENTE_VALIDADORA', 'PAGO_VALIDADORA', 'PAGO_USUARIOS')),
+        dataCriacao TIMESTAMP NOT NULL DEFAULT NOW(),
+        dataPagamentoValidadora TIMESTAMP,
+        observacoes TEXT
+      )
+    `);
+
+    // Tabela de registros de lixo
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS waste_records (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        userId UUID NOT NULL,
+        token VARCHAR(6) NOT NULL UNIQUE,
+        categoria VARCHAR(50) NOT NULL CHECK(categoria IN ('RECICLAVEL', 'ORGANICO')),
+        peso NUMERIC(10,2) NOT NULL,
+        credito NUMERIC(10,2) NOT NULL,
+        loteId UUID,
+        valorProporcional NUMERIC(10,2) DEFAULT 0,
+        status VARCHAR(50) NOT NULL CHECK(status IN ('VALIDADO', 'ENVIADO_VALIDADORA', 'LIBERADO_PAGAMENTO', 'PENDENTE_PAGAMENTO', 'PAGO')),
+        dataCriacao TIMESTAMP NOT NULL DEFAULT NOW(),
+        dataValidacao TIMESTAMP,
+        dataSolicitacaoPagamento TIMESTAMP,
+        dataPagamento TIMESTAMP,
+        FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (loteId) REFERENCES lotes(id) ON DELETE SET NULL
+      )
+    `);
+
+    // Tabela de tokens disponíveis
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS available_tokens (
+        id SERIAL PRIMARY KEY,
+        token VARCHAR(6) NOT NULL,
+        categoria VARCHAR(50) NOT NULL CHECK(categoria IN ('RECICLAVEL', 'ORGANICO')),
+        peso NUMERIC(10,2) NOT NULL,
+        usado SMALLINT NOT NULL DEFAULT 0,
+        dataCriacao TIMESTAMP NOT NULL DEFAULT NOW()
+      )
+    `);
+
+    // Criar índices (apenas se não existirem)
+    await client.query('CREATE INDEX IF NOT EXISTS idx_waste_userId ON waste_records(userId)');
+    await client.query('CREATE INDEX IF NOT EXISTS idx_waste_status ON waste_records(status)');
+    await client.query('CREATE INDEX IF NOT EXISTS idx_waste_token ON waste_records(token)');
+    await client.query('CREATE INDEX IF NOT EXISTS idx_waste_loteId ON waste_records(loteId)');
+    await client.query('CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)');
+    await client.query('CREATE INDEX IF NOT EXISTS idx_users_cnpj ON users(cnpj)');
+    await client.query('CREATE INDEX IF NOT EXISTS idx_tokens_number ON available_tokens(token)');
+    await client.query('CREATE INDEX IF NOT EXISTS idx_tokens_usado ON available_tokens(usado)');
+    await client.query('CREATE INDEX IF NOT EXISTS idx_lotes_status ON lotes(status)');
+
+    console.log('✅ Schema do banco de dados criado com sucesso!');
+  } catch (error) {
+    console.error('❌ Erro ao inicializar banco de dados:', error);
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+// Inicializar banco ao carregar o módulo
+initDatabase().catch(err => {
+  console.error('Falha ao inicializar banco:', err);
 });
 
 module.exports = db;

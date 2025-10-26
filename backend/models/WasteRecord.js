@@ -66,32 +66,28 @@ class WasteRecord {
 
   // Criar novo registro
   static async create(recordData) {
-    const id = uuidv4();
-    const dataCriacao = new Date().toISOString();
-
     try {
       const sql = `
         INSERT INTO waste_records (
-          id, userId, token, categoria, peso, credito, status,
-          dataCriacao, dataValidacao, dataSolicitacaoPagamento, dataPagamento
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          userId, token, categoria, peso, credito, status,
+          dataValidacao, dataSolicitacaoPagamento, dataPagamento
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        RETURNING *
       `;
 
-      await db.runAsync(sql, [
-        id,
+      const result = await db.pool.query(sql, [
         recordData.userId,
         recordData.token,
         recordData.categoria,
         recordData.peso,
         recordData.credito,
         recordData.status || 'VALIDADO',
-        dataCriacao,
-        recordData.dataValidacao || dataCriacao,
+        recordData.dataValidacao || new Date().toISOString(),
         recordData.dataSolicitacaoPagamento || null,
         recordData.dataPagamento || null
       ]);
 
-      return await this.findById(id);
+      return result.rows[0];
     } catch (error) {
       console.error('Erro ao criar registro:', error);
       throw error;
@@ -101,30 +97,38 @@ class WasteRecord {
   // Atualizar status
   static async updateStatus(id, status, additionalData = {}) {
     try {
-      const fields = ['status = ?'];
+      const fields = [];
       const values = [status];
+      let paramCount = 1;
+
+      fields.push(`status = $${paramCount}`);
 
       if (status === 'PENDENTE_PAGAMENTO' && !additionalData.dataSolicitacaoPagamento) {
-        fields.push('dataSolicitacaoPagamento = ?');
+        paramCount++;
+        fields.push(`dataSolicitacaoPagamento = $${paramCount}`);
         values.push(new Date().toISOString());
       } else if (additionalData.dataSolicitacaoPagamento) {
-        fields.push('dataSolicitacaoPagamento = ?');
+        paramCount++;
+        fields.push(`dataSolicitacaoPagamento = $${paramCount}`);
         values.push(additionalData.dataSolicitacaoPagamento);
       }
 
       if (status === 'PAGO' && !additionalData.dataPagamento) {
-        fields.push('dataPagamento = ?');
+        paramCount++;
+        fields.push(`dataPagamento = $${paramCount}`);
         values.push(new Date().toISOString());
       } else if (additionalData.dataPagamento) {
-        fields.push('dataPagamento = ?');
+        paramCount++;
+        fields.push(`dataPagamento = $${paramCount}`);
         values.push(additionalData.dataPagamento);
       }
 
+      paramCount++;
       values.push(id);
-      const sql = `UPDATE waste_records SET ${fields.join(', ')} WHERE id = ?`;
-      await db.runAsync(sql, values);
-
-      return await this.findById(id);
+      const sql = `UPDATE waste_records SET ${fields.join(', ')} WHERE id = $${paramCount} RETURNING *`;
+      
+      const result = await db.pool.query(sql, values);
+      return result.rows[0];
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
       throw error;
@@ -134,16 +138,18 @@ class WasteRecord {
   // Atualizar múltiplos registros
   static async updateMany(ids, status) {
     try {
-      const placeholders = ids.map(() => '?').join(',');
+      const placeholders = ids.map((_, i) => `$${i + 3}`).join(',');
       const dataPagamento = status === 'PAGO' ? new Date().toISOString() : null;
       
       const sql = `
         UPDATE waste_records 
-        SET status = ?, dataPagamento = ? 
+        SET status = $1, dataPagamento = $2 
         WHERE id IN (${placeholders})
+        RETURNING *
       `;
       
-      return await db.runAsync(sql, [status, dataPagamento, ...ids]);
+      const result = await db.pool.query(sql, [status, dataPagamento, ...ids]);
+      return { changes: result.rowCount, rows: result.rows };
     } catch (error) {
       console.error('Erro ao atualizar múltiplos registros:', error);
       throw error;

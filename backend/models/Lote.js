@@ -48,32 +48,20 @@ class Lote {
     }
 
     // Criar lote
-    await new Promise((resolve, reject) => {
-      db.run(
-        `INSERT INTO lotes (id, pesoMaximo, pesoUtilizado, quantidadeTokens, status)
-         VALUES (?, ?, ?, ?, 'PENDENTE_VALIDADORA')`,
-        [id, pesoMaximo, pesoAcumulado, tokensSelecionados.length],
-        (err) => {
-          if (err) reject(err);
-          else resolve();
-        }
-      );
-    });
+    await db.pool.query(
+      `INSERT INTO lotes (id, pesoMaximo, pesoUtilizado, quantidadeTokens, status)
+       VALUES ($1, $2, $3, $4, 'PENDENTE_VALIDADORA')`,
+      [id, pesoMaximo, pesoAcumulado, tokensSelecionados.length]
+    );
 
     // Atualizar tokens para ENVIADO_VALIDADORA e associar ao lote
     for (const token of tokensSelecionados) {
-      await new Promise((resolve, reject) => {
-        db.run(
-          `UPDATE waste_records 
-           SET status = 'ENVIADO_VALIDADORA', loteId = ?
-           WHERE id = ?`,
-          [id, token.id],
-          (err) => {
-            if (err) reject(err);
-            else resolve();
-          }
-        );
-      });
+      await db.pool.query(
+        `UPDATE waste_records 
+         SET status = 'ENVIADO_VALIDADORA', loteId = $1
+         WHERE id = $2`,
+        [id, token.id]
+      );
     }
 
     return {
