@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, DollarSign, CheckCircle, RefreshCw, ChevronDown, ChevronUp, Package, TrendingUp } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
 import Layout from '../../components/Layout/Layout';
 import Card from '../../components/Card/Card';
 import Button from '../../components/Button/Button';
@@ -8,7 +7,6 @@ import api from '../../services/api';
 import './AcompanharPagamento.css';
 
 const AcompanharPagamento = () => {
-  const { user } = useAuth();
   const [dados, setDados] = useState(null);
   const [mostrarPagos, setMostrarPagos] = useState(false);
   const [loading, setLoading] = useState(true);

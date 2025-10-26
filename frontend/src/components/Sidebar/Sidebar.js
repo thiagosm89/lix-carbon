@@ -3,9 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Trash2, 
-  Wallet, 
-  Users, 
-  Settings,
+  Wallet,
   CheckCircle,
   BarChart3,
   Package
