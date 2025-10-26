@@ -16,6 +16,13 @@ const SolicitarPagamento = () => {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState(null);
 
+  // Formatação segura de números
+  const formatNumber = (value, decimals = 1) => {
+    const num = parseFloat(value);
+    if (isNaN(num)) return '0.' + '0'.repeat(decimals);
+    return num.toFixed(decimals);
+  };
+
   useEffect(() => {
     loadData();
   }, []);
@@ -142,7 +149,7 @@ const SolicitarPagamento = () => {
               <div>
                 <div className="resumo-label">Disponível para Saque</div>
                 <div className="resumo-value">
-                  {registrosValidados.reduce((sum, r) => sum + r.credito, 0).toFixed(2)}
+                  {formatNumber(registrosValidados.reduce((sum, r) => sum + r.credito, 0), 2)}
                   <span className="resumo-unit">CO₂</span>
                 </div>
               </div>
@@ -157,7 +164,7 @@ const SolicitarPagamento = () => {
               <div>
                 <div className="resumo-label">Pagamento Pendente</div>
                 <div className="resumo-value">
-                  {pagamentosPendentes.reduce((sum, r) => sum + r.credito, 0).toFixed(2)}
+                  {formatNumber(pagamentosPendentes.reduce((sum, r) => sum + r.credito, 0), 2)}
                   <span className="resumo-unit">CO₂</span>
                 </div>
               </div>
@@ -172,7 +179,7 @@ const SolicitarPagamento = () => {
               <div>
                 <div className="resumo-label">Total Recebido</div>
                 <div className="resumo-value">
-                  {historicoPagamentos.reduce((sum, r) => sum + r.credito, 0).toFixed(2)}
+                  {formatNumber(historicoPagamentos.reduce((sum, r) => sum + r.credito, 0), 2)}
                   <span className="resumo-unit">CO₂</span>
                 </div>
               </div>
@@ -197,7 +204,7 @@ const SolicitarPagamento = () => {
                 {selectedIds.length > 0 && (
                   <div className="selection-info">
                     {selectedIds.length} selecionado(s) • 
-                    <strong> {calcularTotal().toFixed(2)} CO₂</strong>
+                    <strong> {formatNumber(calcularTotal(), 2)} CO₂</strong>
                   </div>
                 )}
               </div>
@@ -225,13 +232,13 @@ const SolicitarPagamento = () => {
                         </span>
                       </div>
                       <div className="registro-details">
-                        <span className="registro-peso">{registro.peso.toFixed(1)} kg</span>
+                        <span className="registro-peso">{formatNumber(registro.peso)} kg</span>
                         <span className="registro-separator">•</span>
                         <span className="registro-token">Token: {registro.token}</span>
                       </div>
                     </div>
                     <div className="registro-credito">
-                      {registro.credito.toFixed(2)} CO₂
+                      {formatNumber(registro.credito, 2)} CO₂
                     </div>
                   </div>
                 ))}
@@ -240,7 +247,7 @@ const SolicitarPagamento = () => {
               <div className="action-footer">
                 <div className="total-section">
                   <span className="total-label">Total Selecionado:</span>
-                  <span className="total-value">{calcularTotal().toFixed(2)} CO₂</span>
+                  <span className="total-value">{formatNumber(calcularTotal(), 2)} CO₂</span>
                 </div>
                 <Button
                   variant="primary"
@@ -288,8 +295,8 @@ const SolicitarPagamento = () => {
                           {registro.categoria === 'RECICLAVEL' ? '♻️ Reciclável' : '🌿 Orgânico'}
                         </span>
                       </td>
-                      <td>{registro.peso.toFixed(1)} kg</td>
-                      <td className="credit-value">{registro.credito.toFixed(2)} CO₂</td>
+                      <td>{formatNumber(registro.peso)} kg</td>
+                      <td className="credit-value">{formatNumber(registro.credito, 2)} CO₂</td>
                       <td>
                         <span className="status status-pendente">
                           ⏱ Aguardando Aprovação
@@ -329,8 +336,8 @@ const SolicitarPagamento = () => {
                           {registro.categoria === 'RECICLAVEL' ? '♻️ Reciclável' : '🌿 Orgânico'}
                         </span>
                       </td>
-                      <td>{registro.peso.toFixed(1)} kg</td>
-                      <td className="credit-value">{registro.credito.toFixed(2)} CO₂</td>
+                      <td>{formatNumber(registro.peso)} kg</td>
+                      <td className="credit-value">{formatNumber(registro.credito, 2)} CO₂</td>
                       <td>
                         <span className="status status-pago">
                           ✓ Pago

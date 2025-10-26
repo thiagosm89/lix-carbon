@@ -11,6 +11,13 @@ const AcompanharPagamento = () => {
   const [mostrarPagos, setMostrarPagos] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // Formatação segura de números
+  const formatNumber = (value, decimals = 1) => {
+    const num = parseFloat(value);
+    if (isNaN(num)) return '0.' + '0'.repeat(decimals);
+    return num.toFixed(decimals);
+  };
+
   useEffect(() => {
     loadData();
   }, []);
@@ -109,7 +116,7 @@ const AcompanharPagamento = () => {
             <div className="summary-content">
               <h3>Pendentes</h3>
               <p className="summary-value">{dados.pendentes.quantidade}</p>
-              <p className="summary-label">tokens ({dados.pendentes.totalPeso.toFixed(1)} kg)</p>
+              <p className="summary-label">tokens ({formatNumber(dados.pendentes.totalPeso)} kg)</p>
               <p className="summary-description">{dados.pendentes.descricao}</p>
             </div>
           </Card>
@@ -171,7 +178,7 @@ const AcompanharPagamento = () => {
                           {registro.categoria}
                         </span>
                       </td>
-                      <td>{registro.peso.toFixed(1)} kg</td>
+                      <td>{formatNumber(registro.peso)} kg</td>
                       <td>{getStatusBadge(registro.status)}</td>
                       <td>{formatDate(registro.dataCriacao)}</td>
                     </tr>
@@ -216,7 +223,7 @@ const AcompanharPagamento = () => {
                           {registro.categoria}
                         </span>
                       </td>
-                      <td>{registro.peso.toFixed(1)} kg</td>
+                      <td>{formatNumber(registro.peso)} kg</td>
                       <td><code className="lote-id">{registro.loteId?.slice(0, 8)}...</code></td>
                       <td className="valor-destaque">{formatMoney(registro.valorProporcional)}</td>
                       <td>{formatDate(registro.dataCriacao)}</td>
@@ -280,7 +287,7 @@ const AcompanharPagamento = () => {
                               {registro.categoria}
                             </span>
                           </td>
-                          <td>{registro.peso.toFixed(1)} kg</td>
+                          <td>{formatNumber(registro.peso)} kg</td>
                           <td><code className="lote-id">{registro.loteId?.slice(0, 8)}...</code></td>
                           <td className="valor-pago">{formatMoney(registro.valorProporcional)}</td>
                           <td>{formatDate(registro.dataPagamento)}</td>

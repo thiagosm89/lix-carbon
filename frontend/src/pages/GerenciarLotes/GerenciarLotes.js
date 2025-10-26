@@ -21,6 +21,13 @@ const GerenciarLotes = () => {
   const [modalPagamento, setModalPagamento] = useState(null);
   const [valorPagamento, setValorPagamento] = useState('');
 
+  // Formatação segura de números
+  const formatNumber = (value, decimals = 1) => {
+    const num = parseFloat(value);
+    if (isNaN(num)) return '0.' + '0'.repeat(decimals);
+    return num.toFixed(decimals);
+  };
+
   const loadData = async () => {
     try {
       setLoading(true);
@@ -263,7 +270,7 @@ const GerenciarLotes = () => {
                           {token.categoria}
                         </span>
                       </td>
-                      <td>{token.peso.toFixed(1)} kg</td>
+                      <td>{formatNumber(token.peso)} kg</td>
                       <td>{formatDate(token.dataCriacao)}</td>
                     </tr>
                   ))}
@@ -319,7 +326,7 @@ const GerenciarLotes = () => {
                   </div>
                   <div className="sim-stat highlight">
                     <span className="sim-label">Peso Total</span>
-                    <span className="sim-value">{simulacao.pesoTotal.toFixed(1)} kg</span>
+                    <span className="sim-value">{formatNumber(simulacao.pesoTotal)} kg</span>
                   </div>
                 </div>
 
@@ -382,7 +389,7 @@ const GerenciarLotes = () => {
                     <tr key={lote.id}>
                       <td><code>{lote.id.slice(0, 8)}...</code></td>
                       <td>{formatDate(lote.dataCriacao)}</td>
-                      <td>{lote.pesoUtilizado.toFixed(1)} kg</td>
+                      <td>{formatNumber(lote.pesoUtilizado)} kg</td>
                       <td>{lote.quantidadeTokens}</td>
                       <td>{formatMoney(lote.valorPago)}</td>
                       <td>{getStatusBadge(lote.status)}</td>
@@ -434,7 +441,7 @@ const GerenciarLotes = () => {
                   </div>
                   <div className="detalhe-item">
                     <span className="detalhe-label">Peso Utilizado</span>
-                    <span>{loteDetalhes.lote.pesoUtilizado.toFixed(1)} kg</span>
+                    <span>{formatNumber(loteDetalhes.lote.pesoUtilizado)} kg</span>
                   </div>
                   <div className="detalhe-item">
                     <span className="detalhe-label">Tokens</span>
@@ -472,7 +479,7 @@ const GerenciarLotes = () => {
                               {token.categoria}
                             </span>
                           </td>
-                          <td>{token.peso.toFixed(1)} kg</td>
+                          <td>{formatNumber(token.peso)} kg</td>
                           <td>{formatMoney(token.valorProporcional)}</td>
                         </tr>
                       ))}
@@ -494,7 +501,7 @@ const GerenciarLotes = () => {
               </div>
               <div className="modal-body">
                 <p>Lote: <code>{modalPagamento.id.slice(0, 8)}...</code></p>
-                <p>Peso: <strong>{modalPagamento.pesoUtilizado.toFixed(1)} kg</strong></p>
+                <p>Peso: <strong>{formatNumber(modalPagamento.pesoUtilizado)} kg</strong></p>
                 <p>Tokens: <strong>{modalPagamento.quantidadeTokens}</strong></p>
 
                 <div className="form-group">

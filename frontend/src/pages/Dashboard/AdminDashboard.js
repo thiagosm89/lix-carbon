@@ -4,6 +4,12 @@ import Card from '../../components/Card/Card';
 import Button from '../../components/Button/Button';
 
 const AdminDashboard = ({ data, onRefresh }) => {
+  // Formatação segura de números
+  const formatNumber = (value, decimals = 2) => {
+    const num = parseFloat(value);
+    if (isNaN(num)) return '0.' + '0'.repeat(decimals);
+    return num.toFixed(decimals);
+  };
 
   return (
     <div className="dashboard-container">
@@ -39,7 +45,7 @@ const AdminDashboard = ({ data, onRefresh }) => {
             <div>
               <div className="stat-label">Total de Créditos</div>
               <div className="stat-value">
-                {data.resumo.totalCredito.toFixed(2)}
+                {formatNumber(data.resumo.totalCredito, 2)}
                 <span className="stat-unit">CO₂</span>
               </div>
             </div>
@@ -66,7 +72,7 @@ const AdminDashboard = ({ data, onRefresh }) => {
             <div>
               <div className="stat-label">Valor Pendente</div>
               <div className="stat-value">
-                {data.resumo.valorPendente.toFixed(2)}
+                {formatNumber(data.resumo.valorPendente, 2)}
                 <span className="stat-unit">CO₂</span>
               </div>
             </div>
@@ -94,10 +100,10 @@ const AdminDashboard = ({ data, onRefresh }) => {
                     <td>{empresa.nome}</td>
                     <td>{empresa.cnpj}</td>
                     <td>{empresa.totalRegistros}</td>
-                    <td>{empresa.creditoTotal.toFixed(2)} CO₂</td>
+                    <td>{formatNumber(empresa.creditoTotal, 2)} CO₂</td>
                     <td>
                       <span className={empresa.creditoPendente > 0 ? 'text-warning' : ''}>
-                        {empresa.creditoPendente.toFixed(2)} CO₂
+                        {formatNumber(empresa.creditoPendente, 2)} CO₂
                       </span>
                     </td>
                   </tr>

@@ -4,6 +4,13 @@ import Card from '../../components/Card/Card';
 import Button from '../../components/Button/Button';
 
 const ValidadorDashboard = ({ data, onRefresh }) => {
+  // Formatação segura de números
+  const formatNumber = (value, decimals = 1) => {
+    const num = parseFloat(value);
+    if (isNaN(num)) return '0.' + '0'.repeat(decimals);
+    return num.toFixed(decimals);
+  };
+
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
@@ -38,7 +45,7 @@ const ValidadorDashboard = ({ data, onRefresh }) => {
             <div>
               <div className="stat-label">Total de Peso</div>
               <div className="stat-value">
-                {data.resumo.totalPeso.toFixed(1)}
+                {formatNumber(data.resumo.totalPeso)}
                 <span className="stat-unit">kg</span>
               </div>
             </div>
@@ -53,7 +60,7 @@ const ValidadorDashboard = ({ data, onRefresh }) => {
             <div>
               <div className="stat-label">Créditos Gerados</div>
               <div className="stat-value">
-                {data.resumo.totalCredito.toFixed(2)}
+                {formatNumber(data.resumo.totalCredito, 2)}
                 <span className="stat-unit">CO₂</span>
               </div>
             </div>
@@ -82,10 +89,10 @@ const ValidadorDashboard = ({ data, onRefresh }) => {
               <div className="distribution-info">
                 <div className="distribution-label">Recicláveis</div>
                 <div className="distribution-value">
-                  {data.porCategoria.RECICLAVEL.peso.toFixed(1)} kg
+                  {formatNumber(data.porCategoria.RECICLAVEL.peso)} kg
                 </div>
                 <div className="distribution-credit">
-                  {data.porCategoria.RECICLAVEL.credito.toFixed(2)} CO₂
+                  {formatNumber(data.porCategoria.RECICLAVEL.credito, 2)} CO₂
                 </div>
               </div>
             </div>
@@ -95,10 +102,10 @@ const ValidadorDashboard = ({ data, onRefresh }) => {
               <div className="distribution-info">
                 <div className="distribution-label">Orgânicos</div>
                 <div className="distribution-value">
-                  {data.porCategoria.ORGANICO.peso.toFixed(1)} kg
+                  {formatNumber(data.porCategoria.ORGANICO.peso)} kg
                 </div>
                 <div className="distribution-credit">
-                  {data.porCategoria.ORGANICO.credito.toFixed(2)} CO₂
+                  {formatNumber(data.porCategoria.ORGANICO.credito, 2)} CO₂
                 </div>
               </div>
             </div>
@@ -131,8 +138,8 @@ const ValidadorDashboard = ({ data, onRefresh }) => {
                         {registro.categoria === 'RECICLAVEL' ? 'Reciclável' : 'Orgânico'}
                       </span>
                     </td>
-                    <td>{registro.peso.toFixed(1)} kg</td>
-                    <td>{registro.credito.toFixed(2)} CO₂</td>
+                    <td>{formatNumber(registro.peso)} kg</td>
+                    <td>{formatNumber(registro.credito, 2)} CO₂</td>
                     <td>
                       <span className={`status status-${registro.status.toLowerCase()}`}>
                         {registro.status === 'VALIDADO' && 'Validado'}

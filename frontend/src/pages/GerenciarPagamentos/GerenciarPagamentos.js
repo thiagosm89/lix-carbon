@@ -13,6 +13,22 @@ const GerenciarPagamentos = () => {
   const [message, setMessage] = useState(null);
   const [users, setUsers] = useState({});
 
+  // Formatação segura de números
+  const formatNumber = (value, decimals = 1) => {
+    const num = parseFloat(value);
+    if (isNaN(num)) return '0.' + '0'.repeat(decimals);
+    return num.toFixed(decimals);
+  };
+
+  const formatMoney = (value) => {
+    const num = parseFloat(value);
+    if (isNaN(num)) return 'R$ 0,00';
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(num);
+  };
+
   useEffect(() => {
     loadData();
   }, []);
@@ -161,7 +177,7 @@ const GerenciarPagamentos = () => {
               <div>
                 <div className="resumo-label">Valor Total Disponível</div>
                 <div className="resumo-value">
-                  R$ {pagamentosPendentes.reduce((sum, p) => sum + (p.valorProporcional || 0), 0).toFixed(2)}
+                  {formatMoney(pagamentosPendentes.reduce((sum, p) => sum + (p.valorProporcional || 0), 0))}
                 </div>
               </div>
             </div>
@@ -197,7 +213,7 @@ const GerenciarPagamentos = () => {
                 {selectedIds.length > 0 && (
                   <div className="selection-info">
                     {selectedIds.length} selecionado(s) • 
-                    <strong> {calcularTotal().toFixed(2)} CO₂</strong>
+                    <strong> {formatNumber(calcularTotal(), 2)} CO₂</strong>
                   </div>
                 )}
               </div>
@@ -227,13 +243,13 @@ const GerenciarPagamentos = () => {
                       <div className="pagamento-details">
                         <span>Data: {new Date(pagamento.dataSolicitacaoPagamento || pagamento.dataCriacao).toLocaleDateString('pt-BR')}</span>
                         <span>•</span>
-                        <span>Peso: {pagamento.peso.toFixed(1)} kg</span>
+                        <span>Peso: {formatNumber(pagamento.peso)} kg</span>
                         <span>•</span>
                         <span>Token: {pagamento.token}</span>
                       </div>
                     </div>
                     <div className="pagamento-credito">
-                      R$ {(pagamento.valorProporcional || 0).toFixed(2)}
+                      {formatMoney(pagamento.valorProporcional || 0)}
                     </div>
                   </div>
                 ))}
@@ -242,7 +258,7 @@ const GerenciarPagamentos = () => {
               <div className="action-footer">
                 <div className="total-section">
                   <span className="total-label">Total a Processar:</span>
-                  <span className="total-value">R$ {calcularTotal().toFixed(2)}</span>
+                  <span className="total-value">{formatMoney(calcularTotal())}</span>
                 </div>
                 <Button
                   variant="primary"
