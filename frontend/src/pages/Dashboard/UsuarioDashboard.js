@@ -15,6 +15,12 @@ import Button from '../../components/Button/Button';
 const UsuarioDashboard = ({ data, onRefresh }) => {
   const navigate = useNavigate();
 
+  // Garantir que valores numéricos sejam números (conversão segura)
+  const safeNumber = (value) => {
+    const num = parseFloat(value);
+    return isNaN(num) ? 0 : num;
+  };
+
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
@@ -37,7 +43,7 @@ const UsuarioDashboard = ({ data, onRefresh }) => {
             <div>
               <div className="stat-label">Peso Total Coletado</div>
               <div className="stat-value">
-                {data.resumo.totalPeso.toFixed(1)}
+                {safeNumber(data.resumo.totalPeso).toFixed(1)}
                 <span className="stat-unit">kg</span>
               </div>
             </div>
@@ -83,7 +89,7 @@ const UsuarioDashboard = ({ data, onRefresh }) => {
                 <div className="category-stat">
                   <span className="stat-label-small">Peso</span>
                   <span className="stat-value-small">
-                    {data.porCategoria.RECICLAVEL.peso.toFixed(1)} kg
+                    {safeNumber(data.porCategoria.RECICLAVEL.peso).toFixed(1)} kg
                   </span>
                 </div>
                 <div className="category-stat">
@@ -115,7 +121,7 @@ const UsuarioDashboard = ({ data, onRefresh }) => {
                 <div className="category-stat">
                   <span className="stat-label-small">Peso</span>
                   <span className="stat-value-small">
-                    {data.porCategoria.ORGANICO.peso.toFixed(1)} kg
+                    {safeNumber(data.porCategoria.ORGANICO.peso).toFixed(1)} kg
                   </span>
                 </div>
                 <div className="category-stat">
@@ -169,7 +175,7 @@ const UsuarioDashboard = ({ data, onRefresh }) => {
                         {registro.categoria === 'RECICLAVEL' ? 'Reciclável' : 'Orgânico'}
                       </span>
                     </td>
-                    <td>{registro.peso.toFixed(1)} kg</td>
+                    <td>{safeNumber(registro.peso).toFixed(1)} kg</td>
                     <td>
                       <span className={`status status-${registro.status.toLowerCase()}`}>
                         {registro.status === 'VALIDADO' && 'Validado'}
