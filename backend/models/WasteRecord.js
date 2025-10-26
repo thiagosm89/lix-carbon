@@ -1,11 +1,27 @@
 const db = require('../database/db');
 const { v4: uuidv4 } = require('uuid');
 
+// Helper para converter strings numéricas do PostgreSQL para números
+const parseNumericFields = (record) => {
+  if (!record) return record;
+  return {
+    ...record,
+    peso: parseFloat(record.peso) || 0,
+    credito: parseFloat(record.credito) || 0
+  };
+};
+
+const parseNumericArrayFields = (records) => {
+  if (!records || !Array.isArray(records)) return [];
+  return records.map(parseNumericFields);
+};
+
 class WasteRecord {
   // Buscar registro por ID
   static async findById(id) {
     try {
-      return await db.getAsync('SELECT * FROM waste_records WHERE id = ?', [id]);
+      const record = await db.getAsync('SELECT * FROM waste_records WHERE id = ?', [id]);
+      return parseNumericFields(record);
     } catch (error) {
       console.error('Erro ao buscar registro:', error);
       return null;
@@ -15,7 +31,8 @@ class WasteRecord {
   // Buscar registro por token
   static async findByToken(token) {
     try {
-      return await db.getAsync('SELECT * FROM waste_records WHERE token = ?', [token]);
+      const record = await db.getAsync('SELECT * FROM waste_records WHERE token = ?', [token]);
+      return parseNumericFields(record);
     } catch (error) {
       console.error('Erro ao buscar por token:', error);
       return null;
@@ -25,11 +42,12 @@ class WasteRecord {
   // Buscar registros por usuário
   static async findByUserId(userId) {
     try {
-      return await db.allAsync(`
+      const records = await db.allAsync(`
         SELECT * FROM waste_records 
         WHERE userId = ? 
         ORDER BY dataCriacao DESC
       `, [userId]);
+      return parseNumericArrayFields(records);
     } catch (error) {
       console.error('Erro ao buscar registros do usuário:', error);
       return [];
@@ -39,11 +57,12 @@ class WasteRecord {
   // Buscar registros por status
   static async findByStatus(status) {
     try {
-      return await db.allAsync(`
+      const records = await db.allAsync(`
         SELECT * FROM waste_records 
         WHERE status = ? 
         ORDER BY dataCriacao DESC
       `, [status]);
+      return parseNumericArrayFields(records);
     } catch (error) {
       console.error('Erro ao buscar por status:', error);
       return [];
@@ -53,11 +72,12 @@ class WasteRecord {
   // Buscar registros por usuário e status
   static async findByUserIdAndStatus(userId, status) {
     try {
-      return await db.allAsync(`
+      const records = await db.allAsync(`
         SELECT * FROM waste_records 
         WHERE userId = ? AND status = ? 
         ORDER BY dataCriacao DESC
       `, [userId, status]);
+      return parseNumericArrayFields(records);
     } catch (error) {
       console.error('Erro ao buscar registros:', error);
       return [];
@@ -87,7 +107,7 @@ class WasteRecord {
         recordData.dataPagamento || null
       ]);
 
-      return result.rows[0];
+      return parseNumericFields(result.rows[0]);
     } catch (error) {
       console.error('Erro ao criar registro:', error);
       throw error;
@@ -128,7 +148,7 @@ class WasteRecord {
       const sql = `UPDATE waste_records SET ${fields.join(', ')} WHERE id = $${paramCount} RETURNING *`;
       
       const result = await db.pool.query(sql, values);
-      return result.rows[0];
+      return parseNumericFields(result.rows[0]);
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
       throw error;
@@ -149,7 +169,7 @@ class WasteRecord {
       `;
       
       const result = await db.pool.query(sql, [status, dataPagamento, ...ids]);
-      return { changes: result.rowCount, rows: result.rows };
+      return { changes: result.rowCount, rows: parseNumericArrayFields(result.rows) };
     } catch (error) {
       console.error('Erro ao atualizar múltiplos registros:', error);
       throw error;
@@ -179,7 +199,8 @@ class WasteRecord {
   // Listar todos os registros
   static async findAll() {
     try {
-      return await db.allAsync('SELECT * FROM waste_records ORDER BY dataCriacao DESC', []);
+      const records = await db.allAsync('SELECT * FROM waste_records ORDER BY dataCriacao DESC', []);
+      return parseNumericArrayFields(records);
     } catch (error) {
       console.error('Erro ao listar registros:', error);
       return [];
