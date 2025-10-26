@@ -1,0 +1,280 @@
+.pagamento-container {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Message */
+.message {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  font-weight: 600;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.message-success {
+  background-color: #D1FAE5;
+  color: #065F46;
+}
+
+.message-error {
+  background-color: #FEE2E2;
+  color: #991B1B;
+}
+
+/* Resumo Grid */
+.resumo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.resumo-card {
+  border-radius: 16px;
+  transition: var(--transition);
+}
+
+.resumo-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+}
+
+.resumo-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.resumo-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  color: var(--white);
+}
+
+.icon-disponivel {
+  background: linear-gradient(135deg, #4ADE80 0%, #22C55E 100%);
+}
+
+.icon-pendente {
+  background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
+}
+
+.icon-recebido {
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+}
+
+.resumo-label {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.resumo-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--gray-900);
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.resumo-unit {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gray-600);
+}
+
+/* Selection Header */
+.selection-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--gray-50);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.checkbox-input {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+
+.selection-info {
+  font-size: 0.875rem;
+  color: var(--gray-700);
+}
+
+.selection-info strong {
+  color: var(--primary);
+  margin-left: 0.25rem;
+}
+
+/* Registros List */
+.registros-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.registro-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background-color: var(--white);
+  border: 2px solid var(--gray-200);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.registro-item:hover {
+  border-color: var(--primary-light);
+  background-color: var(--bg-light);
+  transform: translateX(4px);
+}
+
+.registro-item.selected {
+  border-color: var(--primary);
+  background: linear-gradient(135deg, #F0FDF4 0%, #E8F5E9 100%);
+  box-shadow: var(--shadow-md);
+}
+
+.registro-info {
+  flex: 1;
+}
+
+.registro-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.registro-data {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  font-weight: 500;
+}
+
+.registro-details {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--gray-700);
+}
+
+.registro-peso {
+  font-weight: 600;
+}
+
+.registro-separator {
+  color: var(--gray-400);
+}
+
+.registro-token {
+  font-family: 'Courier New', monospace;
+  color: var(--gray-600);
+}
+
+.registro-credito {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  white-space: nowrap;
+}
+
+/* Action Footer */
+.action-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, var(--gray-50) 0%, var(--bg-light) 100%);
+  border-radius: 12px;
+  border: 2px solid var(--gray-200);
+}
+
+.total-section {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.total-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gray-700);
+}
+
+.total-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+/* Table Status */
+.status-pendente {
+  background-color: #FEF3C7;
+  color: #D97706;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .resumo-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .action-footer {
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: stretch;
+  }
+
+  .total-section {
+    justify-content: space-between;
+  }
+
+  .registro-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .registro-credito {
+    align-self: flex-end;
+  }
+
+  .selection-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}
+

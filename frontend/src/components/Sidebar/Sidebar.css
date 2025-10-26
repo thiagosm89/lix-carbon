@@ -1,0 +1,123 @@
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  background: linear-gradient(180deg, #2E8B57 0%, #3CB371 100%);
+  color: var(--white);
+  transition: width 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-lg);
+}
+
+.sidebar.open {
+  width: 260px;
+}
+
+.sidebar.closed {
+  width: 80px;
+}
+
+.sidebar-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.logo-icon {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--secondary);
+  white-space: nowrap;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 1.5rem 0;
+  overflow-y: auto;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: var(--transition);
+  position: relative;
+  white-space: nowrap;
+}
+
+.sidebar-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+}
+
+.sidebar-item.active {
+  background-color: rgba(127, 209, 75, 0.2);
+  color: var(--secondary);
+  font-weight: 600;
+}
+
+.sidebar-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: var(--secondary);
+}
+
+.sidebar.closed .sidebar-item {
+  justify-content: center;
+  padding: 1rem;
+}
+
+.sidebar.closed .sidebar-item span {
+  display: none;
+}
+
+.sidebar-footer {
+  padding: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-role {
+  text-align: center;
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary);
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .sidebar.open {
+    width: 100%;
+  }
+  
+  .sidebar.closed {
+    transform: translateX(-100%);
+  }
+}
+

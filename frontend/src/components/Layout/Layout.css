@@ -1,0 +1,38 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-light);
+}
+
+.layout-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.3s ease;
+}
+
+.layout-main.sidebar-open {
+  margin-left: 260px;
+}
+
+.layout-main.sidebar-closed {
+  margin-left: 80px;
+}
+
+.layout-content {
+  flex: 1;
+  padding: 2rem;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@media (max-width: 768px) {
+  .layout-main.sidebar-open,
+  .layout-main.sidebar-closed {
+    margin-left: 0;
+  }
+  
+  .layout-content {
+    padding: 1rem;
+  }
+}
+
