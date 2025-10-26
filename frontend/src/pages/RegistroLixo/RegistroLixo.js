@@ -178,10 +178,9 @@ const RegistroLixo = () => {
                   </div>
                 </div>
                 <div className="summary-item">
-                  <div className="summary-label">Créditos Gerados</div>
+                  <div className="summary-label">Total de Coletas</div>
                   <div className="summary-value primary">
-                    {estatisticas.totalCredito.toFixed(2)}
-                    <span className="summary-unit">CO₂</span>
+                    {estatisticas.porCategoria.RECICLAVEL.quantidade + estatisticas.porCategoria.ORGANICO.quantidade}
                   </div>
                 </div>
               </div>
@@ -198,9 +197,6 @@ const RegistroLixo = () => {
                     <div className="breakdown-value">
                       {estatisticas.porCategoria.RECICLAVEL.peso.toFixed(1)} kg
                     </div>
-                    <div className="breakdown-credit">
-                      {estatisticas.porCategoria.RECICLAVEL.credito.toFixed(2)} CO₂
-                    </div>
                   </div>
                 </div>
 
@@ -214,9 +210,6 @@ const RegistroLixo = () => {
                   <div className="breakdown-values">
                     <div className="breakdown-value">
                       {estatisticas.porCategoria.ORGANICO.peso.toFixed(1)} kg
-                    </div>
-                    <div className="breakdown-credit">
-                      {estatisticas.porCategoria.ORGANICO.credito.toFixed(2)} CO₂
                     </div>
                   </div>
                 </div>
@@ -236,7 +229,6 @@ const RegistroLixo = () => {
                     <th>Token</th>
                     <th>Categoria</th>
                     <th>Peso</th>
-                    <th>Crédito Gerado</th>
                     <th>Status</th>
                   </tr>
                 </thead>
@@ -261,9 +253,6 @@ const RegistroLixo = () => {
                         </span>
                       </td>
                       <td>{registro.peso.toFixed(1)} kg</td>
-                      <td className="credit-value">
-                        {registro.credito.toFixed(2)} CO₂
-                      </td>
                       <td>
                         <span className={`status status-${registro.status.toLowerCase()}`}>
                           {registro.status === 'VALIDADO' && '✓ Validado'}

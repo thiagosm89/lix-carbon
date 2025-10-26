@@ -7,7 +7,8 @@ import {
   Users, 
   Settings,
   CheckCircle,
-  BarChart3
+  BarChart3,
+  Package
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -16,7 +17,7 @@ const Sidebar = ({ isOpen, userRole }) => {
     USUARIO: [
       { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
       { path: '/registrar-lixo', icon: Trash2, label: 'Registrar Lixo' },
-      { path: '/pagamentos', icon: Wallet, label: 'Pagamentos' }
+      { path: '/pagamentos', icon: Wallet, label: 'Acompanhar Pagamento' }
     ],
     VALIDADOR_CREDITO: [
       { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -25,9 +26,7 @@ const Sidebar = ({ isOpen, userRole }) => {
     ],
     ADMINISTRADOR: [
       { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-      { path: '/empresas', icon: Users, label: 'Empresas' },
-      { path: '/pagamentos', icon: Wallet, label: 'Pagamentos' },
-      { path: '/configuracoes', icon: Settings, label: 'Configurações' }
+      { path: '/gerenciar-lotes', icon: Package, label: 'Gerenciar Lotes' }
     ]
   };
 

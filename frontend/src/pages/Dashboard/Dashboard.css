@@ -316,6 +316,19 @@
   color: #D97706;
 }
 
+/* Token Badge */
+.token-badge {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  background-color: #E0F2FE;
+  color: #0369A1;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.5px;
+}
+
 /* Status */
 .status {
   display: inline-block;

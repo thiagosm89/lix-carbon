@@ -1,11 +1,9 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Users, TrendingUp, Wallet, AlertCircle, RefreshCw } from 'lucide-react';
 import Card from '../../components/Card/Card';
 import Button from '../../components/Button/Button';
 
 const AdminDashboard = ({ data, onRefresh }) => {
-  const navigate = useNavigate();
 
   return (
     <div className="dashboard-container">
@@ -114,60 +112,6 @@ const AdminDashboard = ({ data, onRefresh }) => {
           </div>
         )}
       </Card>
-
-      {/* Pagamentos Pendentes */}
-      <Card title="Pagamentos Aguardando Processamento" icon={Wallet}>
-        {data.pagamentosPendentes && data.pagamentosPendentes.length > 0 ? (
-          <div className="records-table">
-            <table>
-              <thead>
-                <tr>
-                  <th>Data Solicitação</th>
-                  <th>Empresa</th>
-                  <th>Categoria</th>
-                  <th>Peso</th>
-                  <th>Crédito</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.pagamentosPendentes.map((registro) => (
-                  <tr key={registro.id}>
-                    <td>
-                      {new Date(registro.dataSolicitacaoPagamento || registro.dataCriacao)
-                        .toLocaleDateString('pt-BR')}
-                    </td>
-                    <td>Empresa #{registro.userId.slice(0, 8)}</td>
-                    <td>
-                      <span className={`badge badge-${registro.categoria.toLowerCase()}`}>
-                        {registro.categoria === 'RECICLAVEL' ? 'Reciclável' : 'Orgânico'}
-                      </span>
-                    </td>
-                    <td>{registro.peso.toFixed(1)} kg</td>
-                    <td>{registro.credito.toFixed(2)} CO₂</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="empty-state">
-            <Wallet size={48} />
-            <p>Nenhum pagamento pendente no momento</p>
-          </div>
-        )}
-      </Card>
-
-      {/* Ações Rápidas */}
-      <div className="quick-actions">
-        <Button 
-          variant="primary" 
-          size="large" 
-          icon={Wallet}
-          onClick={() => navigate('/pagamentos')}
-        >
-          Gerenciar Pagamentos
-        </Button>
-      </div>
     </div>
   );
 };

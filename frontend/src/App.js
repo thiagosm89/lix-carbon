@@ -9,7 +9,9 @@ import Login from './pages/Login/Login';
 import Cadastro from './pages/Cadastro/Cadastro';
 import Dashboard from './pages/Dashboard/Dashboard';
 import RegistroLixo from './pages/RegistroLixo/RegistroLixo';
-import SolicitarPagamento from './pages/SolicitarPagamento/SolicitarPagamento';
+import AcompanharPagamento from './pages/AcompanharPagamento/AcompanharPagamento';
+import GerenciarPagamentos from './pages/GerenciarPagamentos/GerenciarPagamentos';
+import GerenciarLotes from './pages/GerenciarLotes/GerenciarLotes';
 
 function App() {
   return (
@@ -41,8 +43,24 @@ function App() {
           <Route
             path="/pagamentos"
             element={
-              <ProtectedRoute roles={['USUARIO', 'ADMINISTRADOR']}>
-                <SolicitarPagamento />
+              <ProtectedRoute roles={['USUARIO']}>
+                <AcompanharPagamento />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/gerenciar-pagamentos"
+            element={
+              <ProtectedRoute roles={['ADMINISTRADOR']}>
+                <GerenciarPagamentos />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/gerenciar-lotes"
+            element={
+              <ProtectedRoute roles={['ADMINISTRADOR']}>
+                <GerenciarLotes />
               </ProtectedRoute>
             }
           />
