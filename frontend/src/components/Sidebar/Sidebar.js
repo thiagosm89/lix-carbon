@@ -6,7 +6,8 @@ import {
   Wallet,
   CheckCircle,
   BarChart3,
-  Package
+  Package,
+  Building2
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -24,7 +25,8 @@ const Sidebar = ({ isOpen, userRole }) => {
     ],
     ADMINISTRADOR: [
       { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-      { path: '/gerenciar-lotes', icon: Package, label: 'Gerenciar Lotes' }
+      { path: '/gerenciar-lotes', icon: Package, label: 'Gerenciar Lotes' },
+      { path: '/gerenciar-validadoras', icon: Building2, label: 'Validadoras' }
     ]
   };
 

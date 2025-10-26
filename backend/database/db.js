@@ -133,6 +133,21 @@ async function initDatabase() {
       )
     `);
 
+    // Tabela de empresas validadoras
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS validadoras (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        nomeEmpresa VARCHAR(255) NOT NULL,
+        cnpj VARCHAR(18) NOT NULL UNIQUE,
+        email VARCHAR(255) NOT NULL,
+        telefone VARCHAR(20),
+        endereco TEXT,
+        responsavel VARCHAR(255),
+        ativa BOOLEAN DEFAULT true,
+        dataCadastro TIMESTAMP NOT NULL DEFAULT NOW()
+      )
+    `);
+
     // Tabela de tokens disponíveis
     await client.query(`
       CREATE TABLE IF NOT EXISTS available_tokens (

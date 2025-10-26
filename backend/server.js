@@ -12,6 +12,7 @@ const paymentRoutes = require('./routes/payment');
 const dashboardRoutes = require('./routes/dashboard');
 const loteRoutes = require('./routes/lote');
 const totemRoutes = require('./routes/totem');
+const validadoraRoutes = require('./routes/validadora');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -38,6 +39,7 @@ app.use('/api/payment', paymentRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/lote', loteRoutes);
 app.use('/api/totem', totemRoutes); // Endpoint público para simulação do totem
+app.use('/api/validadora', validadoraRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

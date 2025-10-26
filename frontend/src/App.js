@@ -12,6 +12,7 @@ import RegistroLixo from './pages/RegistroLixo/RegistroLixo';
 import AcompanharPagamento from './pages/AcompanharPagamento/AcompanharPagamento';
 import GerenciarPagamentos from './pages/GerenciarPagamentos/GerenciarPagamentos';
 import GerenciarLotes from './pages/GerenciarLotes/GerenciarLotes';
+import GerenciarValidadoras from './pages/GerenciarValidadoras/GerenciarValidadoras';
 
 function App() {
   return (
@@ -61,6 +62,14 @@ function App() {
             element={
               <ProtectedRoute roles={['ADMINISTRADOR']}>
                 <GerenciarLotes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/gerenciar-validadoras"
+            element={
+              <ProtectedRoute roles={['ADMINISTRADOR']}>
+                <GerenciarValidadoras />
               </ProtectedRoute>
             }
           />
