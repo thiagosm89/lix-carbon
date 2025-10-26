@@ -13,6 +13,13 @@ const RegistroLixo = () => {
   const [registros, setRegistros] = useState([]);
   const [estatisticas, setEstatisticas] = useState(null);
 
+  // Formatação segura de números - NUNCA quebra!
+  const formatNumber = (value, decimals = 1) => {
+    const num = parseFloat(value);
+    if (isNaN(num)) return '0.' + '0'.repeat(decimals);
+    return num.toFixed(decimals);
+  };
+
   useEffect(() => {
     loadData();
   }, []);
@@ -173,7 +180,7 @@ const RegistroLixo = () => {
                 <div className="summary-item">
                   <div className="summary-label">Total Coletado</div>
                   <div className="summary-value">
-                    {estatisticas.totalPeso.toFixed(1)}
+                    {formatNumber(estatisticas.totalPeso)}
                     <span className="summary-unit">kg</span>
                   </div>
                 </div>
@@ -195,7 +202,7 @@ const RegistroLixo = () => {
                   </div>
                   <div className="breakdown-values">
                     <div className="breakdown-value">
-                      {estatisticas.porCategoria.RECICLAVEL.peso.toFixed(1)} kg
+                      {formatNumber(estatisticas.porCategoria.RECICLAVEL.peso)} kg
                     </div>
                   </div>
                 </div>
@@ -209,7 +216,7 @@ const RegistroLixo = () => {
                   </div>
                   <div className="breakdown-values">
                     <div className="breakdown-value">
-                      {estatisticas.porCategoria.ORGANICO.peso.toFixed(1)} kg
+                      {formatNumber(estatisticas.porCategoria.ORGANICO.peso)} kg
                     </div>
                   </div>
                 </div>
@@ -252,7 +259,7 @@ const RegistroLixo = () => {
                           {registro.categoria === 'RECICLAVEL' ? '♻️ Reciclável' : '🌿 Orgânico'}
                         </span>
                       </td>
-                      <td>{registro.peso.toFixed(1)} kg</td>
+                      <td>{formatNumber(registro.peso)} kg</td>
                       <td>
                         <span className={`status status-${registro.status.toLowerCase()}`}>
                           {registro.status === 'VALIDADO' && '✓ Validado'}
