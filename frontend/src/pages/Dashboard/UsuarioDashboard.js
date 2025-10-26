@@ -15,10 +15,11 @@ import Button from '../../components/Button/Button';
 const UsuarioDashboard = ({ data, onRefresh }) => {
   const navigate = useNavigate();
 
-  // Garantir que valores numéricos sejam números (conversão segura)
-  const safeNumber = (value) => {
+  // Formatação segura de números - NUNCA quebra!
+  const formatNumber = (value, decimals = 1) => {
     const num = parseFloat(value);
-    return isNaN(num) ? 0 : num;
+    if (isNaN(num)) return '0.' + '0'.repeat(decimals);
+    return num.toFixed(decimals);
   };
 
   return (
@@ -43,7 +44,7 @@ const UsuarioDashboard = ({ data, onRefresh }) => {
             <div>
               <div className="stat-label">Peso Total Coletado</div>
               <div className="stat-value">
-                {safeNumber(data.resumo.totalPeso).toFixed(1)}
+                {formatNumber(data.resumo.totalPeso)}
                 <span className="stat-unit">kg</span>
               </div>
             </div>
@@ -89,7 +90,7 @@ const UsuarioDashboard = ({ data, onRefresh }) => {
                 <div className="category-stat">
                   <span className="stat-label-small">Peso</span>
                   <span className="stat-value-small">
-                    {safeNumber(data.porCategoria.RECICLAVEL.peso).toFixed(1)} kg
+                    {formatNumber(data.porCategoria.RECICLAVEL.peso)} kg
                   </span>
                 </div>
                 <div className="category-stat">
@@ -121,7 +122,7 @@ const UsuarioDashboard = ({ data, onRefresh }) => {
                 <div className="category-stat">
                   <span className="stat-label-small">Peso</span>
                   <span className="stat-value-small">
-                    {safeNumber(data.porCategoria.ORGANICO.peso).toFixed(1)} kg
+                    {formatNumber(data.porCategoria.ORGANICO.peso)} kg
                   </span>
                 </div>
                 <div className="category-stat">
@@ -175,7 +176,7 @@ const UsuarioDashboard = ({ data, onRefresh }) => {
                         {registro.categoria === 'RECICLAVEL' ? 'Reciclável' : 'Orgânico'}
                       </span>
                     </td>
-                    <td>{safeNumber(registro.peso).toFixed(1)} kg</td>
+                    <td>{formatNumber(registro.peso)} kg</td>
                     <td>
                       <span className={`status status-${registro.status.toLowerCase()}`}>
                         {registro.status === 'VALIDADO' && 'Validado'}
