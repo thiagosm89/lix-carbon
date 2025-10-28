@@ -1,19 +1,26 @@
 const db = require('../database/db');
 const { v4: uuidv4 } = require('uuid');
+const { mapDbObjectToCamelCase, mapDbArrayToCamelCase } = require('../utils/columnMapper');
 
 /**
  * Helper para converter strings numéricas do PostgreSQL para números
+ * e mapear colunas lowercase para camelCase
  */
 const parseNumericFields = (lote) => {
   if (!lote) return lote;
+  
+  // Primeiro mapeia as colunas para camelCase
+  const mapped = mapDbObjectToCamelCase(lote);
+  
+  // Depois converte os campos numéricos
   return {
-    ...lote,
-    pesomaximo: parseFloat(lote.pesomaximo) || 0,
-    pesoutilizado: parseFloat(lote.pesoutilizado) || 0,
-    quantidadetokens: parseInt(lote.quantidadetokens) || 0,
-    percentualempresa: parseFloat(lote.percentualempresa) || 20,
-    valorpago: parseFloat(lote.valorpago) || 0,
-    valordistribuido: parseFloat(lote.valordistribuido) || 0
+    ...mapped,
+    pesoMaximo: parseFloat(mapped.pesoMaximo || mapped.pesomaximo) || 0,
+    pesoUtilizado: parseFloat(mapped.pesoUtilizado || mapped.pesoutilizado) || 0,
+    quantidadeTokens: parseInt(mapped.quantidadeTokens || mapped.quantidadetokens) || 0,
+    percentualEmpresa: parseFloat(mapped.percentualEmpresa || mapped.percentualempresa) || 20,
+    valorPago: parseFloat(mapped.valorPago || mapped.valorpago) || 0,
+    valorDistribuido: parseFloat(mapped.valorDistribuido || mapped.valordistribuido) || 0
   };
 };
 

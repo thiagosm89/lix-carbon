@@ -336,11 +336,22 @@
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .status-validado {
   background-color: #D1FAE5;
   color: #059669;
+}
+
+.status-enviado_validadora {
+  background-color: #E0E7FF;
+  color: #4F46E5;
+}
+
+.status-liberado_pagamento {
+  background-color: #DDD6FE;
+  color: #7C3AED;
 }
 
 .status-pendente_pagamento {

@@ -22,6 +22,18 @@ const UsuarioDashboard = ({ data, onRefresh }) => {
     return num.toFixed(decimals);
   };
 
+  // Formatação de status
+  const formatStatus = (status) => {
+    const statusMap = {
+      'VALIDADO': 'Validado',
+      'ENVIADO_VALIDADORA': 'Enviado à Validadora',
+      'LIBERADO_PAGAMENTO': 'Liberado p/ Pagamento',
+      'PENDENTE_PAGAMENTO': 'Pendente Pagamento',
+      'PAGO': 'Pago'
+    };
+    return statusMap[status] || status;
+  };
+
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
@@ -169,7 +181,7 @@ const UsuarioDashboard = ({ data, onRefresh }) => {
               <tbody>
                 {data.ultimosRegistros.map((registro) => (
                   <tr key={registro.id}>
-                    <td>{new Date(registro.dataCriacao).toLocaleDateString('pt-BR')}</td>
+                    <td>{new Date(registro.dataCriacao).toLocaleString('pt-BR')}</td>
                     <td><span className="token-badge">{registro.token}</span></td>
                     <td>
                       <span className={`badge badge-${registro.categoria.toLowerCase()}`}>
@@ -179,9 +191,7 @@ const UsuarioDashboard = ({ data, onRefresh }) => {
                     <td>{formatNumber(registro.peso)} kg</td>
                     <td>
                       <span className={`status status-${registro.status.toLowerCase()}`}>
-                        {registro.status === 'VALIDADO' && 'Validado'}
-                        {registro.status === 'PENDENTE_PAGAMENTO' && 'Pend. Pagamento'}
-                        {registro.status === 'PAGO' && 'Pago'}
+                        {formatStatus(registro.status)}
                       </span>
                     </td>
                   </tr>

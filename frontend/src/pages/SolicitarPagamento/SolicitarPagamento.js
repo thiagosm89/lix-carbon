@@ -228,7 +228,7 @@ const SolicitarPagamento = () => {
                           {registro.categoria === 'RECICLAVEL' ? '♻️ Reciclável' : '🌿 Orgânico'}
                         </span>
                         <span className="registro-data">
-                          {new Date(registro.dataCriacao).toLocaleDateString('pt-BR')}
+                          {new Date(registro.dataCriacao).toLocaleString('pt-BR')}
                         </span>
                       </div>
                       <div className="registro-details">
@@ -288,7 +288,7 @@ const SolicitarPagamento = () => {
                     <tr key={registro.id}>
                       <td>
                         {new Date(registro.dataSolicitacaoPagamento || registro.dataCriacao)
-                          .toLocaleDateString('pt-BR')}
+                          .toLocaleString('pt-BR')}
                       </td>
                       <td>
                         <span className={`badge badge-${registro.categoria.toLowerCase()}`}>
@@ -329,7 +329,7 @@ const SolicitarPagamento = () => {
                     <tr key={registro.id}>
                       <td>
                         {new Date(registro.dataPagamento)
-                          .toLocaleDateString('pt-BR')}
+                          .toLocaleString('pt-BR')}
                       </td>
                       <td>
                         <span className={`badge badge-${registro.categoria.toLowerCase()}`}>

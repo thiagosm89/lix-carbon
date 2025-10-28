@@ -143,33 +143,13 @@ const RegistroLixo = () => {
                 <li>O totem pesará e gerará um token de 6 dígitos</li>
                 <li>Insira o token aqui para registrar em sua conta</li>
               </ol>
-            </div>
-
-            <div className="tokens-exemplo">
-              <strong>Tokens de Teste Disponíveis:</strong>
-              <div className="token-list">
-                <button 
-                  className="token-chip"
-                  onClick={() => setToken('789012')}
-                  type="button"
-                >
-                  789012 - Reciclável 180kg
-                </button>
-                <button 
-                  className="token-chip"
-                  onClick={() => setToken('890123')}
-                  type="button"
-                >
-                  890123 - Orgânico 220kg
-                </button>
-                <button 
-                  className="token-chip"
-                  onClick={() => setToken('901234')}
-                  type="button"
-                >
-                  901234 - Reciclável 275.5kg
-                </button>
-              </div>
+              <p className="info-dica">
+                💡 <strong>Não tem um totem por perto?</strong> Experimente nosso{' '}
+                <a href="/totem" target="_blank" rel="noopener noreferrer" className="link-totem">
+                  Simulador de Totem
+                </a>
+                {' '}para gerar tokens de teste!
+              </p>
             </div>
           </Card>
 

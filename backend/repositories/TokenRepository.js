@@ -1,4 +1,5 @@
 const db = require('../database/db');
+const { mapDbObjectToCamelCase, mapDbArrayToCamelCase } = require('../utils/columnMapper');
 
 /**
  * Repository para acesso aos dados de tokens
@@ -10,7 +11,8 @@ class TokenRepository {
    */
   async findByToken(token) {
     try {
-      return await db.getAsync('SELECT * FROM available_tokens WHERE token = ?', [token]);
+      const result = await db.getAsync('SELECT * FROM available_tokens WHERE token = ?', [token]);
+      return mapDbObjectToCamelCase(result);
     } catch (error) {
       console.error('Erro ao buscar token:', error);
       return null;
@@ -22,7 +24,8 @@ class TokenRepository {
    */
   async findAvailable(token) {
     try {
-      return await db.getAsync('SELECT * FROM available_tokens WHERE token = ? AND usado = 0', [token]);
+      const result = await db.getAsync('SELECT * FROM available_tokens WHERE token = ? AND usado = 0', [token]);
+      return mapDbObjectToCamelCase(result);
     } catch (error) {
       console.error('Erro ao buscar token disponível:', error);
       return null;
@@ -47,7 +50,7 @@ class TokenRepository {
         0
       ]);
 
-      return result.rows[0];
+      return mapDbObjectToCamelCase(result.rows[0]);
     } catch (error) {
       console.error('Erro ao criar token:', error);
       throw error;
@@ -71,7 +74,8 @@ class TokenRepository {
    */
   async findAll() {
     try {
-      return await db.allAsync('SELECT * FROM available_tokens', []);
+      const results = await db.allAsync('SELECT * FROM available_tokens', []);
+      return mapDbArrayToCamelCase(results);
     } catch (error) {
       console.error('Erro ao listar tokens:', error);
       return [];
@@ -83,7 +87,8 @@ class TokenRepository {
    */
   async findAllAvailable() {
     try {
-      return await db.allAsync('SELECT * FROM available_tokens WHERE usado = 0', []);
+      const results = await db.allAsync('SELECT * FROM available_tokens WHERE usado = 0', []);
+      return mapDbArrayToCamelCase(results);
     } catch (error) {
       console.error('Erro ao listar tokens disponíveis:', error);
       return [];
@@ -112,7 +117,8 @@ class TokenRepository {
         ORDER BY dataCriacao DESC 
         LIMIT $1
       `;
-      return await db.allAsync(sql, [limit]);
+      const results = await db.allAsync(sql, [limit]);
+      return mapDbArrayToCamelCase(results);
     } catch (error) {
       console.error('Erro ao buscar tokens recentes:', error);
       return [];

@@ -7,10 +7,12 @@ const TotemService = require('../services/TotemService');
 class TotemController {
   /**
    * POST /api/totem/gerar-token
+   * Body (opcional): { pesoReciclavel, pesoOrganico, detalhamento[] }
    */
   async gerarToken(req, res) {
     try {
-      const token = await TotemService.gerarToken();
+      const dadosDeposito = req.body || null;
+      const token = await TotemService.gerarToken(dadosDeposito);
       res.status(201).json({
         success: true,
         message: 'Token gerado com sucesso!',

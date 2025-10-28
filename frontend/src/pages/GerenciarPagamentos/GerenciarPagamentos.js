@@ -241,7 +241,7 @@ const GerenciarPagamentos = () => {
                         </span>
                       </div>
                       <div className="pagamento-details">
-                        <span>Data: {new Date(pagamento.dataSolicitacaoPagamento || pagamento.dataCriacao).toLocaleDateString('pt-BR')}</span>
+                        <span>Data: {new Date(pagamento.dataSolicitacaoPagamento || pagamento.dataCriacao).toLocaleString('pt-BR')}</span>
                         <span>•</span>
                         <span>Peso: {formatNumber(pagamento.peso)} kg</span>
                         <span>•</span>

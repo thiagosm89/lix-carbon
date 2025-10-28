@@ -8,7 +8,8 @@ import {
   Shield, 
   Mail,
   ArrowRight,
-  CheckCircle
+  CheckCircle,
+  Smartphone
 } from 'lucide-react';
 import Button from '../../components/Button/Button';
 import './LandingPage.css';
@@ -71,6 +72,14 @@ const LandingPage = () => {
                 onClick={() => navigate('/cadastro')}
               >
                 Comece Agora
+              </Button>
+              <Button 
+                variant="secondary" 
+                size="large"
+                icon={Smartphone}
+                onClick={() => navigate('/totem')}
+              >
+                Simular Totem
               </Button>
               <Button 
                 variant="outline" 

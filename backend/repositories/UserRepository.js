@@ -1,5 +1,6 @@
 const db = require('../database/db');
 const bcrypt = require('bcryptjs');
+const { mapDbObjectToCamelCase, mapDbArrayToCamelCase } = require('../utils/columnMapper');
 
 /**
  * Repository para acesso aos dados de usuários
@@ -11,7 +12,8 @@ class UserRepository {
    */
   async findByEmail(email) {
     try {
-      return await db.getAsync('SELECT * FROM users WHERE email = ?', [email]);
+      const result = await db.getAsync('SELECT * FROM users WHERE email = ?', [email]);
+      return mapDbObjectToCamelCase(result);
     } catch (error) {
       console.error('Erro ao buscar por email:', error);
       return null;
@@ -23,7 +25,8 @@ class UserRepository {
    */
   async findByCnpj(cnpj) {
     try {
-      return await db.getAsync('SELECT * FROM users WHERE cnpj = ?', [cnpj]);
+      const result = await db.getAsync('SELECT * FROM users WHERE cnpj = ?', [cnpj]);
+      return mapDbObjectToCamelCase(result);
     } catch (error) {
       console.error('Erro ao buscar por CNPJ:', error);
       return null;
@@ -35,7 +38,8 @@ class UserRepository {
    */
   async findById(id) {
     try {
-      return await db.getAsync('SELECT * FROM users WHERE id = ?', [id]);
+      const result = await db.getAsync('SELECT * FROM users WHERE id = ?', [id]);
+      return mapDbObjectToCamelCase(result);
     } catch (error) {
       console.error('Erro ao buscar por ID:', error);
       return null;
@@ -47,7 +51,8 @@ class UserRepository {
    */
   async findByEmailOrCnpj(identifier) {
     try {
-      return await db.getAsync('SELECT * FROM users WHERE email = ? OR cnpj = ?', [identifier, identifier]);
+      const result = await db.getAsync('SELECT * FROM users WHERE email = ? OR cnpj = ?', [identifier, identifier]);
+      return mapDbObjectToCamelCase(result);
     } catch (error) {
       console.error('Erro ao buscar usuário:', error);
       return null;
@@ -59,7 +64,8 @@ class UserRepository {
    */
   async findByRole(role) {
     try {
-      return await db.allAsync('SELECT * FROM users WHERE role = ?', [role]);
+      const results = await db.allAsync('SELECT * FROM users WHERE role = ?', [role]);
+      return mapDbArrayToCamelCase(results);
     } catch (error) {
       console.error('Erro ao buscar por role:', error);
       return [];
@@ -89,7 +95,7 @@ class UserRepository {
         userData.telefone || null
       ]);
 
-      return result.rows[0];
+      return mapDbObjectToCamelCase(result.rows[0]);
     } catch (error) {
       console.error('Erro ao criar usuário:', error);
       throw error;
@@ -151,7 +157,8 @@ class UserRepository {
    */
   async findAll() {
     try {
-      return await db.allAsync('SELECT * FROM users', []);
+      const results = await db.allAsync('SELECT * FROM users', []);
+      return mapDbArrayToCamelCase(results);
     } catch (error) {
       console.error('Erro ao listar usuários:', error);
       return [];

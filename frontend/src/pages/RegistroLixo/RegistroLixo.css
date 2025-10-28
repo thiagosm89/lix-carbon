@@ -125,47 +125,31 @@
   line-height: 1.6;
 }
 
-/* Tokens de Exemplo */
-.tokens-exemplo {
-  padding: 1.5rem;
-  background-color: var(--gray-50);
-  border-radius: 12px;
-}
-
-.tokens-exemplo strong {
-  display: block;
-  font-size: 0.875rem;
-  color: var(--gray-900);
-  margin-bottom: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.token-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.token-chip {
+/* Info Dica */
+.info-dica {
+  margin-top: 1rem;
   padding: 1rem;
-  background: var(--white);
-  border: 2px solid var(--gray-200);
+  background: linear-gradient(135deg, #E8F5E9 0%, #F0FDF4 100%);
+  border-left: 4px solid var(--primary);
   border-radius: 8px;
-  font-family: 'Courier New', monospace;
   font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--gray-900);
-  cursor: pointer;
-  transition: var(--transition);
-  text-align: left;
+  color: var(--gray-700);
 }
 
-.token-chip:hover {
-  border-color: var(--primary);
-  background-color: var(--bg-light);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+.info-dica strong {
+  color: var(--gray-900);
+}
+
+.link-totem {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.link-totem:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
 }
 
 /* Stats Summary */

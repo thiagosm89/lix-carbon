@@ -1,14 +1,22 @@
 const db = require('../database/db');
+const { mapDbObjectToCamelCase, mapDbArrayToCamelCase } = require('../utils/columnMapper');
 
 /**
  * Helper para converter strings numéricas do PostgreSQL para números
+ * e mapear colunas lowercase para camelCase
  */
 const parseNumericFields = (record) => {
   if (!record) return record;
+  
+  // Primeiro mapeia as colunas para camelCase
+  const mapped = mapDbObjectToCamelCase(record);
+  
+  // Depois converte os campos numéricos
   return {
-    ...record,
-    peso: parseFloat(record.peso) || 0,
-    credito: parseFloat(record.credito) || 0
+    ...mapped,
+    peso: parseFloat(mapped.peso) || 0,
+    credito: parseFloat(mapped.credito) || 0,
+    valorProporcional: parseFloat(mapped.valorProporcional || mapped.valorproporcional) || 0
   };
 };
 

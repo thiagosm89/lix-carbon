@@ -6,20 +6,38 @@ const TokenRepository = require('../repositories/TokenRepository');
  */
 class TotemService {
   /**
-   * Gerar token pelo totem
+   * Gerar token pelo totem com dados detalhados
    */
-  async gerarToken() {
+  async gerarToken(dadosDeposito = null) {
     // Gerar token de 6 dígitos aleatórios
     const token = Math.floor(100000 + Math.random() * 900000).toString();
     
-    // Gerar peso aleatório entre 5kg e 500kg
-    const peso = parseFloat((Math.random() * (500 - 5) + 5).toFixed(2));
+    let peso, categoria, pesoReciclavel, pesoOrganico, detalhamento;
+
+    if (dadosDeposito) {
+      // Usar dados do simulador
+      pesoReciclavel = parseFloat(dadosDeposito.pesoReciclavel) || 0;
+      pesoOrganico = parseFloat(dadosDeposito.pesoOrganico) || 0;
+      peso = pesoReciclavel + pesoOrganico;
+      
+      // Determinar categoria predominante
+      categoria = pesoReciclavel >= pesoOrganico ? 'RECICLAVEL' : 'ORGANICO';
+      
+      detalhamento = dadosDeposito.detalhamento || [];
+      
+      console.log(`🎫 Token gerado pelo simulador: ${token}`);
+      console.log(`   📊 Reciclável: ${pesoReciclavel}kg | Orgânico: ${pesoOrganico}kg`);
+      console.log(`   📋 Itens: ${detalhamento.length} tipos diferentes`);
+    } else {
+      // Gerar aleatório (modo antigo)
+      peso = parseFloat((Math.random() * (500 - 5) + 5).toFixed(2));
+      const categorias = ['RECICLAVEL', 'ORGANICO'];
+      categoria = categorias[Math.floor(Math.random() * categorias.length)];
+      
+      console.log(`🎫 Token gerado aleatório: ${token} | ${categoria} | ${peso}kg`);
+    }
     
-    // Categoria aleatória
-    const categorias = ['RECICLAVEL', 'ORGANICO'];
-    const categoria = categorias[Math.floor(Math.random() * categorias.length)];
-    
-    // Criar token no banco de dados
+    // Criar token no banco de dados com usado = 0 (disponível)
     const novoToken = await TokenRepository.create({
       token,
       categoria,
@@ -27,12 +45,13 @@ class TotemService {
       usado: false
     });
 
-    console.log(`🎫 Token gerado pelo totem: ${token} | ${categoria} | ${peso}kg`);
-
     return {
       numero: novoToken.token,
       categoria: novoToken.categoria,
       peso: novoToken.peso,
+      pesoReciclavel: dadosDeposito ? pesoReciclavel : (categoria === 'RECICLAVEL' ? peso : 0),
+      pesoOrganico: dadosDeposito ? pesoOrganico : (categoria === 'ORGANICO' ? peso : 0),
+      detalhamento: detalhamento || [],
       dataCriacao: novoToken.dataCriacao,
       usado: novoToken.usado
     };

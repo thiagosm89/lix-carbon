@@ -13,6 +13,7 @@ import AcompanharPagamento from './pages/AcompanharPagamento/AcompanharPagamento
 import GerenciarPagamentos from './pages/GerenciarPagamentos/GerenciarPagamentos';
 import GerenciarLotes from './pages/GerenciarLotes/GerenciarLotes';
 import GerenciarValidadoras from './pages/GerenciarValidadoras/GerenciarValidadoras';
+import TotemSimulador from './pages/TotemSimulador/TotemSimulador';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/cadastro" element={<Cadastro />} />
+          <Route path="/totem" element={<TotemSimulador />} />
           
           {/* Rotas protegidas */}
           <Route

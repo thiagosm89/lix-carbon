@@ -1,4 +1,5 @@
 const db = require('../database/db');
+const { mapDbObjectToCamelCase, mapDbArrayToCamelCase } = require('../utils/columnMapper');
 
 /**
  * Repository para acesso aos dados de validadoras
@@ -27,7 +28,7 @@ class ValidadoraRepository {
         validadoraData.ativa !== undefined ? validadoraData.ativa : true
       ]);
 
-      return result.rows[0];
+      return mapDbObjectToCamelCase(result.rows[0]);
     } catch (error) {
       console.error('Erro ao criar validadora:', error);
       throw error;
@@ -42,7 +43,7 @@ class ValidadoraRepository {
       const result = await db.pool.query(
         'SELECT * FROM validadoras ORDER BY nomeEmpresa ASC'
       );
-      return result.rows;
+      return mapDbArrayToCamelCase(result.rows);
     } catch (error) {
       console.error('Erro ao listar validadoras:', error);
       return [];
@@ -57,7 +58,7 @@ class ValidadoraRepository {
       const result = await db.pool.query(
         'SELECT * FROM validadoras WHERE ativa = true ORDER BY nomeEmpresa ASC'
       );
-      return result.rows;
+      return mapDbArrayToCamelCase(result.rows);
     } catch (error) {
       console.error('Erro ao listar validadoras ativas:', error);
       return [];
@@ -73,7 +74,7 @@ class ValidadoraRepository {
         'SELECT * FROM validadoras WHERE id = $1',
         [id]
       );
-      return result.rows[0] || null;
+      return mapDbObjectToCamelCase(result.rows[0]) || null;
     } catch (error) {
       console.error('Erro ao buscar validadora:', error);
       return null;
@@ -89,7 +90,7 @@ class ValidadoraRepository {
         'SELECT * FROM validadoras WHERE cnpj = $1',
         [cnpj]
       );
-      return result.rows[0] || null;
+      return mapDbObjectToCamelCase(result.rows[0]) || null;
     } catch (error) {
       console.error('Erro ao buscar validadora por CNPJ:', error);
       return null;
@@ -125,7 +126,7 @@ class ValidadoraRepository {
         id
       ]);
 
-      return result.rows[0] || null;
+      return mapDbObjectToCamelCase(result.rows[0]) || null;
     } catch (error) {
       console.error('Erro ao atualizar validadora:', error);
       throw error;
@@ -145,7 +146,7 @@ class ValidadoraRepository {
       `;
 
       const result = await db.pool.query(sql, [id]);
-      return result.rows[0] || null;
+      return mapDbObjectToCamelCase(result.rows[0]) || null;
     } catch (error) {
       console.error('Erro ao alternar status da validadora:', error);
       throw error;
@@ -161,7 +162,7 @@ class ValidadoraRepository {
         'DELETE FROM validadoras WHERE id = $1 RETURNING *',
         [id]
       );
-      return result.rows[0] || null;
+      return mapDbObjectToCamelCase(result.rows[0]) || null;
     } catch (error) {
       console.error('Erro ao deletar validadora:', error);
       throw error;
@@ -180,7 +181,7 @@ class ValidadoraRepository {
           SUM(CASE WHEN ativa = false THEN 1 ELSE 0 END)::int as inativas
         FROM validadoras
       `);
-      return result.rows[0];
+      return mapDbObjectToCamelCase(result.rows[0]);
     } catch (error) {
       console.error('Erro ao buscar estatísticas:', error);
       return { total: 0, ativas: 0, inativas: 0 };

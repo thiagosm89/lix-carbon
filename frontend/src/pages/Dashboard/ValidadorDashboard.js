@@ -131,7 +131,7 @@ const ValidadorDashboard = ({ data, onRefresh }) => {
               <tbody>
                 {data.registrosRecentes.map((registro) => (
                   <tr key={registro.id}>
-                    <td>{new Date(registro.dataCriacao).toLocaleDateString('pt-BR')}</td>
+                    <td>{new Date(registro.dataCriacao).toLocaleString('pt-BR')}</td>
                     <td>Empresa #{registro.userId.slice(0, 8)}</td>
                     <td>
                       <span className={`badge badge-${registro.categoria.toLowerCase()}`}>
