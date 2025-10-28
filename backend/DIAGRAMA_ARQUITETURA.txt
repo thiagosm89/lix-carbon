@@ -1,0 +1,184 @@
+
+================================================================================
+                    LIXCARBON - LAYER ARCHITECTURE
+                         Diagrama da Arquitetura
+================================================================================
+
+
+                            ┌─────────────────┐
+                            │   FRONTEND      │
+                            │   (React)       │
+                            └────────┬────────┘
+                                     │
+                            HTTP Request/Response
+                                     │
+                                     ▼
+================================================================================
+                         BACKEND - 3 CAMADAS
+================================================================================
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                        CAMADA 1: PRESENTATION                            ┃
+┃                         (controllers/ + routes/)                         ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+    ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+    │    Auth      │  │    Waste     │  │   Payment    │  │    Lote      │
+    │  Controller  │  │  Controller  │  │  Controller  │  │  Controller  │
+    └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
+           │                 │                 │                 │
+    ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+    │  Dashboard   │  │    Totem     │  │  Validadora  │
+    │  Controller  │  │  Controller  │  │  Controller  │
+    └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
+           │                 │                 │
+           └─────────┬───────┴────────┬────────┘
+                     │                │
+                     ▼                ▼
+           ┌─────────────────────────────────┐
+           │  Valida entrada HTTP            │
+           │  Formata resposta HTTP          │
+           │  Retorna status codes           │
+           └─────────────┬───────────────────┘
+                         │
+                         ▼
+================================================================================
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                    CAMADA 2: BUSINESS LOGIC                              ┃
+┃                           (services/)                                    ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+    ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+    │    Auth      │  │    Waste     │  │   Payment    │  │    Lote      │
+    │   Service    │  │   Service    │  │   Service    │  │   Service    │
+    └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
+           │                 │                 │                 │
+    ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+    │  Dashboard   │  │    Totem     │  │  Validadora  │
+    │   Service    │  │   Service    │  │   Service    │
+    └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
+           │                 │                 │
+           └─────────┬───────┴────────┬────────┘
+                     │                │
+                     ▼                ▼
+           ┌─────────────────────────────────┐
+           │  Validações de negócio          │
+           │  Cálculos e transformações      │
+           │  Coordena múltiplos repos       │
+           │  Lança exceções com mensagens   │
+           └─────────────┬───────────────────┘
+                         │
+                         ▼
+================================================================================
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                    CAMADA 3: DATA ACCESS                                 ┃
+┃                        (repositories/)                                   ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+    ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+    │     User     │  │ WasteRecord  │  │    Token     │  │    Lote      │
+    │  Repository  │  │  Repository  │  │  Repository  │  │  Repository  │
+    └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
+           │                 │                 │                 │
+           │          ┌──────────────┐         │                 │
+           │          │  Validadora  │         │                 │
+           └──────────│  Repository  │─────────┴─────────────────┘
+                      └──────┬───────┘
+                             │
+                             ▼
+           ┌─────────────────────────────────┐
+           │  Executa queries SQL            │
+           │  Parse de resultados            │
+           │  CRUD operations                │
+           │  Sem lógica de negócio          │
+           └─────────────┬───────────────────┘
+                         │
+                         ▼
+================================================================================
+                            ┌─────────────────┐
+                            │   POSTGRESQL    │
+                            │    DATABASE     │
+                            └─────────────────┘
+
+================================================================================
+                           EXEMPLO DE FLUXO
+================================================================================
+
+1. Usuario faz POST /api/waste/registrar com token "123456"
+   │
+2. ┌─────────────────────────────────────────────────────────────┐
+   │ routes/waste.js                                             │
+   │  → Aplica authenticateToken middleware                      │
+   │  → Aplica authorizeRole('USUARIO') middleware              │
+   │  → Chama WasteController.registrar()                        │
+   └─────────────────────────────────────────────────────────────┘
+   │
+3. ┌─────────────────────────────────────────────────────────────┐
+   │ WasteController.registrar()                                 │
+   │  → Extrai userId de req.user.id                            │
+   │  → Extrai token de req.body                                │
+   │  → Chama WasteService.registrar(userId, token)             │
+   │  → Retorna 201 com dados do registro                       │
+   └─────────────────────────────────────────────────────────────┘
+   │
+4. ┌─────────────────────────────────────────────────────────────┐
+   │ WasteService.registrar()                                    │
+   │  → Valida token (6 dígitos)                                │
+   │  → Chama TokenRepository.findAvailable(token)              │
+   │  → Calcula crédito baseado no peso e categoria             │
+   │  → Chama WasteRecordRepository.create(dados)               │
+   │  → Chama TokenRepository.markAsUsed(token)                 │
+   │  → Retorna registro criado                                 │
+   └─────────────────────────────────────────────────────────────┘
+   │
+5. ┌─────────────────────────────────────────────────────────────┐
+   │ TokenRepository.findAvailable()                             │
+   │  → SELECT * FROM available_tokens                          │
+   │     WHERE token = ? AND usado = 0                          │
+   │  → Retorna dados do token ou null                          │
+   └─────────────────────────────────────────────────────────────┘
+   │
+6. ┌─────────────────────────────────────────────────────────────┐
+   │ WasteRecordRepository.create()                              │
+   │  → INSERT INTO waste_records (...) VALUES (...)            │
+   │     RETURNING *                                             │
+   │  → Retorna registro criado com campos parseados            │
+   └─────────────────────────────────────────────────────────────┘
+   │
+7. ┌─────────────────────────────────────────────────────────────┐
+   │ TokenRepository.markAsUsed()                                │
+   │  → UPDATE available_tokens SET usado = 1                   │
+   │     WHERE token = ?                                         │
+   │  → Retorna resultado da atualização                        │
+   └─────────────────────────────────────────────────────────────┘
+   │
+8. Resposta retorna ao frontend:
+   {
+     "message": "Lixo registrado com sucesso",
+     "registro": { id, token, peso, credito, ... }
+   }
+
+================================================================================
+                         BENEFÍCIOS DA ARQUITETURA
+================================================================================
+
+✅ SEPARAÇÃO DE RESPONSABILIDADES
+   Cada camada tem uma função específica e bem definida
+
+✅ MANUTENIBILIDADE
+   Código organizado e fácil de encontrar e modificar
+
+✅ TESTABILIDADE
+   Cada camada pode ser testada independentemente
+
+✅ REUSABILIDADE
+   Services podem ser reutilizados por diferentes controllers
+
+✅ ESCALABILIDADE
+   Fácil adicionar novas funcionalidades sem afetar código existente
+
+✅ FLEXIBILIDADE
+   Fácil trocar implementações (ex: PostgreSQL → MongoDB)
+
+================================================================================
+
