@@ -44,19 +44,6 @@ class WasteRecordRepository {
   }
 
   /**
-   * Buscar registro por token
-   */
-  async findByToken(token) {
-    try {
-      const record = await db.getAsync('SELECT * FROM waste_records WHERE token = ?', [token]);
-      return parseNumericFields(record);
-    } catch (error) {
-      console.error('Erro ao buscar por token:', error);
-      return null;
-    }
-  }
-
-  /**
    * Buscar registros por usuário
    */
   async findByUserId(userId) {

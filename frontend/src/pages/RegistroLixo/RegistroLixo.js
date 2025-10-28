@@ -3,6 +3,8 @@ import { Trash2, CheckCircle, AlertCircle, Hash, RefreshCw } from 'lucide-react'
 import Layout from '../../components/Layout/Layout';
 import Card from '../../components/Card/Card';
 import Button from '../../components/Button/Button';
+import StatusBadge from '../../components/StatusBadge/StatusBadge';
+import CategoryBadge from '../../components/CategoryBadge/CategoryBadge';
 import api from '../../services/api';
 import './RegistroLixo.css';
 
@@ -235,17 +237,11 @@ const RegistroLixo = () => {
                         <code className="token-code">{registro.token}</code>
                       </td>
                       <td>
-                        <span className={`badge badge-${registro.categoria.toLowerCase()}`}>
-                          {registro.categoria === 'RECICLAVEL' ? '♻️ Reciclável' : '🌿 Orgânico'}
-                        </span>
+                        <CategoryBadge categoria={registro.categoria} />
                       </td>
                       <td>{formatNumber(registro.peso)} kg</td>
                       <td>
-                        <span className={`status status-${registro.status.toLowerCase()}`}>
-                          {registro.status === 'VALIDADO' && '✓ Validado'}
-                          {registro.status === 'PENDENTE_PAGAMENTO' && '⏱ Pend. Pagamento'}
-                          {registro.status === 'PAGO' && '✓ Pago'}
-                        </span>
+                        <StatusBadge status={registro.status} showIcon={true} />
                       </td>
                     </tr>
                   ))}

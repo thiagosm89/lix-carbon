@@ -11,6 +11,8 @@ import {
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import Card from '../../components/Card/Card';
 import Button from '../../components/Button/Button';
+import StatusBadge from '../../components/StatusBadge/StatusBadge';
+import CategoryBadge from '../../components/CategoryBadge/CategoryBadge';
 
 const UsuarioDashboard = ({ data, onRefresh }) => {
   const navigate = useNavigate();
@@ -20,18 +22,6 @@ const UsuarioDashboard = ({ data, onRefresh }) => {
     const num = parseFloat(value);
     if (isNaN(num)) return '0.' + '0'.repeat(decimals);
     return num.toFixed(decimals);
-  };
-
-  // Formatação de status
-  const formatStatus = (status) => {
-    const statusMap = {
-      'VALIDADO': 'Validado',
-      'ENVIADO_VALIDADORA': 'Enviado à Validadora',
-      'LIBERADO_PAGAMENTO': 'Liberado p/ Pagamento',
-      'PENDENTE_PAGAMENTO': 'Pendente Pagamento',
-      'PAGO': 'Pago'
-    };
-    return statusMap[status] || status;
   };
 
   return (
@@ -184,15 +174,11 @@ const UsuarioDashboard = ({ data, onRefresh }) => {
                     <td>{new Date(registro.dataCriacao).toLocaleString('pt-BR')}</td>
                     <td><span className="token-badge">{registro.token}</span></td>
                     <td>
-                      <span className={`badge badge-${registro.categoria.toLowerCase()}`}>
-                        {registro.categoria === 'RECICLAVEL' ? 'Reciclável' : 'Orgânico'}
-                      </span>
+                      <CategoryBadge categoria={registro.categoria} />
                     </td>
                     <td>{formatNumber(registro.peso)} kg</td>
                     <td>
-                      <span className={`status status-${registro.status.toLowerCase()}`}>
-                        {formatStatus(registro.status)}
-                      </span>
+                      <StatusBadge status={registro.status} />
                     </td>
                   </tr>
                 ))}
